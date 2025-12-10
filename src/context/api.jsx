@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 const ApiContext = createContext();
 
 export function ApiProvider({ children }) {
-  const url = "https://www.joonweb.com/testfeature/instafeed/videos.json";
+  const url = "https://api2.joonweb.com/videos.json";
   const [items, setItems] = useState([]);
 
   useEffect(() => {
