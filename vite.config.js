@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    allowedHosts: ["mechanical-kijiji-routes-last.trycloudflare.com"]
+    allowedHosts: ["currently-athletic-testimony-consequences.trycloudflare.com"]
   }
 })

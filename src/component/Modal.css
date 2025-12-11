@@ -22,7 +22,6 @@
     border-radius: 2rem;
     position: relative;
     color: white;
-    overflow: hidden;
 }
 
 .modal-card-left {
@@ -183,6 +182,9 @@
   transform: scale(1.08);
 }
 
+.mySwiper {
+  height: 100vh;
+}
 
 @media (max-width: 600px) {
 

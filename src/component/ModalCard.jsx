@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useItems } from "../context/api";
 import { useModal } from "../context/modal";
 import { useThumb } from "../context/thumb";
-import useReelPressControls from "../hooks/useReelPressControls";
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Mousewheel, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+
 
 const ModalCard = () => {
   const { handleCloseModal } = useModal()
@@ -26,14 +30,6 @@ const ModalCard = () => {
       inline: "nearest"
     });
   };
-
-  const { handlers } = useReelPressControls({
-    onNext: nextThumb,
-    onPrev: prevThumb,
-    cooldown: 400,
-    moveThreshold: 25 
-  });
-
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -64,25 +60,39 @@ const ModalCard = () => {
   return (
     <div className="modal-card-container" onClick={(e) => e.stopPropagation()}>
 
-      <div className="modal-card-left" {...handlers}>
+      <Swiper
+        direction={"vertical"}
+        slidesPerView={1}
+        spaceBetween={30}
+        mousewheel={true}
+        pagination={{
+          clickable: true,
+        }}
+        onSlideNextTransitionStart={() => nextThumb()}
+        onSlidePrevTransitionStart={() => prevThumb()}
+        modules={[Mousewheel, Pagination]}
+        className="modal-card-left"
+      >
+        <SwiperSlide>
 
-        <div className="mute-btn" onClick={toggleMute}>
-          {isMuted ? "🔇" : "🔊"}
-        </div>
-
-        {
-          items[thumbAt] && <div className="iframe-wrapper">
-            <iframe
-              onLoad={(e) => e.target.classList.add("loaded")}
-              className="modal-card-left-iframe loading"
-              src={`${items?.[thumbAt]?.videoUrl}`}
-              key={iframeKey}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+          <div className="mute-btn" onClick={toggleMute}>
+            {isMuted ? "🔇" : "🔊"}
           </div>
-        }
-      </div>
+
+          {
+            items[thumbAt] && <div className="iframe-wrapper">
+              <iframe
+                onLoad={(e) => e.target.classList.add("loaded")}
+                className="modal-card-left-iframe loading"
+                src={`${items?.[thumbAt]?.videoUrl}`}
+                key={iframeKey}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          }
+        </SwiperSlide>
+      </Swiper>
 
       {
         <div className="modal-card-right">
