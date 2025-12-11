@@ -15,7 +15,6 @@ const Card = () => {
      handleOpenModal()
      setThumb(index)
   }
-
   return (
    <div>
     <div className="card-container">
@@ -34,7 +33,7 @@ const Card = () => {
             />
           ) : (
             <img
-              className="thumb"
+              className="thumb" 
               src={item.thumbnailUrl}
               alt={item.title ?? "thumbnail"}
               loading="lazy"

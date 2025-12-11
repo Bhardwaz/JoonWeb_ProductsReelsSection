@@ -71,7 +71,7 @@ export default function ModalCard() {
   return (
     <div className="modal-card-container">
       {isMobile ? (
-        
+
         <Swiper
           direction="vertical"
           slidesPerView={1}
@@ -85,46 +85,50 @@ export default function ModalCard() {
         >
           {items.map((item, idx) => (
             <SwiperSlide key={idx}>
-              <div style={{ position: "relative", height: "100vh", width: "100%" }}>
-                <div className="mute-btn" onClick={toggleMute} style={{ zIndex: 20 }}>{isMuted ? "🔇" : "🔊"}</div>
-                <div className="iframe-wrapper" style={{ width: "100%", height: "100%" }}>
+              <div className="iframe-wrapper"> 
+                <div className="iframe-block-overlay" attr="overlay"> </div>
                   <iframe
                     className="modal-card-left-iframe loading"
                     src={item.videoUrl}
                     key={iframeKey + "-" + idx}
+                    loop={true}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
                     allowFullScreen
                     style={{ width: "100%", height: "100%", border: 0, display: "block" }}
                     onLoad={(e) => e.target.classList.add("loaded")}
                   />
-                </div>
+               
               </div>
             </SwiperSlide>
           ))}
+          <div className="mute-btn" onClick={toggleMute} style={{ zIndex: 20 }}>{isMuted ? "🔇" : "🔊"}</div>
+          <div className="mobile-add-to-cart-bar">
+            <button className="mobile-atc-btn"><span className="mobile-cart-icon">🛒</span>Add to Cart</button>
+          </div>
         </Swiper>
       ) : (
         // DESKTOP
         <div
           className="modal-card-left"
         >
-            <div
-              className="swipe-catcher"
-              style={{ height: "100vh", width: "100%" }}
-            >
-              <div className="mute-btn" onClick={toggleMute} style={{ zIndex: 20 }}>{isMuted ? "🔇" : "🔊"}</div>
+          <div
+            className="swipe-catcher"
+            style={{ height: "100vh", width: "100%" }}
+          >
+            <div className="mute-btn" onClick={toggleMute} style={{ zIndex: 20 }}>{isMuted ? "🔇" : "🔊"}</div>
 
-              <div className="iframe-wrapper">
-                <iframe
-                  className="modal-card-left-iframe loading"
-                  src={items[thumbAt].videoUrl}
-                  key={iframeKey}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
-                  allowFullScreen
-                  style={{ width: "100%", height: "100%", border: 0, display: "block" }}
-                  onLoad={(e) => e.target.classList.add("loaded")}
-                />
-              </div>
+            <div className="iframe-wrapper">
+              <iframe
+                className="modal-card-left-iframe loading"
+                src={items[thumbAt].videoUrl}
+                key={iframeKey}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
+                allowFullScreen
+                style={{ width: "100%", height: "100%", border: 0, display: "block" }}
+                onLoad={(e) => e.target.classList.add("loaded")}
+              />
             </div>
+          </div>
         </div>
       )}
 
