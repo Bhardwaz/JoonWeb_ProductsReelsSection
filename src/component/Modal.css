@@ -24,6 +24,38 @@
     color: white;
 }
 
+.modal-card-left,
+.mySwiper,
+.swiper-wrapper,
+.swiper-slide,
+.iframe-wrapper {
+  touch-action: pan-y;        
+  -ms-touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.swipe-catcher {
+  position: absolute;
+  inset: 0;                       /* covers the entire video area */
+  z-index: 5;                     /* above iframe, below controls (mute/close) */
+  background: transparent;
+  touch-action: pan-y;            /* ensure vertical gestures are delivered */
+}
+
+/* put iframe below the swipe-catcher so the wrapper can receive touches */
+.modal-card-left-iframe {
+  position: relative;
+  z-index: 1;
+}
+
+/* keep mute/close visually and interactively on top */
+.mute-btn,
+.close-button {
+  z-index: 999;
+}
+
+/* --- End touch / swipe fixes --- */
+
 .modal-card-left, .mySwiper, .swipe-catcher { height: 100vh; }
 .modal-card-left-iframe { object-fit: cover; width: 100%; height: 100%; }
 
