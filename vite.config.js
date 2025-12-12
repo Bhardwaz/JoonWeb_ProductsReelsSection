@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    allowedHosts: ["currently-athletic-testimony-consequences.trycloudflare.com"]
+    allowedHosts: ["dependent-michigan-stadium-domestic.trycloudflare.com/"]
   }
 })

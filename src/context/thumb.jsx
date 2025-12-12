@@ -1,21 +1,16 @@
 import React, { useState } from "react";
-import { useItems } from "../context/api";
 const ThumbContext = React.createContext();
 
 export const ThumbProvider = ({ children }) => {
   const [thumbAt, setThumbAt] = useState(0);
-  const items = useItems()?.items || [];
 
-  const nextThumb = () => {
-    const len = items?.length || 0;
-    if (len === 0) return;
+  const nextThumb = (len) => {
+    if (len === 0 || len === undefined) return;
     setThumbAt((prev) => (prev + 1) % len);
   };
 
-  const prevThumb = () => {
-    console.log("came here")
-    const len = items?.length || 0;
-    if (len === 0) return;
+  const prevThumb = (len) => {
+    if (len === 0 || len === undefined) return;
     setThumbAt((prev) => (prev - 1 + len) % len);
   };
 

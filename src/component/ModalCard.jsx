@@ -3,15 +3,15 @@ import { useItems } from "../context/api";
 import { useModal } from "../context/modal";
 import { useThumb } from "../context/thumb";
 import "swiper/css";
-import "swiper/css/pagination";
 import { Mousewheel, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import boatAirdopesImage from '../assets/boat-airdopes.jpeg';
 
 const MOBILE_BREAKPOINT = 768;
 
 export default function ModalCard() {
   const { handleCloseModal } = useModal();
-  const items = useItems()?.items || [];
+  const { items, appendNext, allItems } = useItems()
   const { thumbAt, nextThumb, prevThumb } = useThumb();
 
   const playersRef = useRef({});
@@ -57,10 +57,11 @@ export default function ModalCard() {
     const handleKey = (e) => {
       if (["ArrowRight", "ArrowDown", "d", "s"].includes(e.key)) {
         smoothScrollToCenter();
-        nextThumb();
+        appendNext()
+        nextThumb(allItems?.length);
       } else if (["ArrowLeft", "ArrowUp", "a", "w"].includes(e.key)) {
         smoothScrollToCenter();
-        prevThumb();
+        prevThumb(allItems?.length);
       } else if (e.key === "Escape") {
         handleCloseModal();
       }
@@ -85,7 +86,7 @@ export default function ModalCard() {
         // Ensure background slides are muted; active slide follows global isMuted
         if (typeof player.mute === "function") {
           if (idx === activeIndex) {
-            if (isMuted) player.mute(); 
+            if (isMuted) player.mute();
             else player.unmute && player.unmute();
           } else {
             player.mute();
@@ -172,6 +173,7 @@ export default function ModalCard() {
     prevIndexRef.current = newIndex;
 
     pauseAllExcept(newIndex);
+    appendNext()
   };
 
   // --- toggle mute for active player ---
@@ -200,7 +202,7 @@ export default function ModalCard() {
     // fallback (no SDK): try postMessage
     const iframe = iframesRef.current[activeIndex];
     if (iframe && iframe.contentWindow) {
-      try { iframe.contentWindow.postMessage({ method: newMuted ? "mute" : "unmute" }, "*"); } catch (e) {}
+      try { iframe.contentWindow.postMessage({ method: newMuted ? "mute" : "unmute" }, "*"); } catch (e) { }
     }
   };
 
@@ -215,7 +217,6 @@ export default function ModalCard() {
           slidesPerView={1}
           spaceBetween={30}
           mousewheel
-          pagination={{ clickable: true }}
           modules={[Mousewheel, Pagination]}
           className="modal-card-left mySwiper"
           initialSlide={thumbAt}
@@ -270,6 +271,27 @@ export default function ModalCard() {
                     }}
                   />
                 </div>
+                <div className="mobile-product-bar">
+                  <img
+                    className="mobile-product-thumb"
+                    src={items[thumbAt]?.products?.[0]?.image || boatAirdopesImage}
+                    alt={items[thumbAt]?.products?.[0]?.title || "Product"}
+                  />
+
+                  <div className="mobile-product-info">
+                    <div className="mobile-product-title">
+                      {items[thumbAt]?.products?.[0]?.title || "boAt Airdopes 161 Pro"}
+                    </div>
+
+                    <div className="mobile-product-price">
+                      <span className="mobile-current">₹1,499</span>
+                      <span className="mobile-old">₹4,499</span>
+                    </div>
+                  </div>
+
+                  <button className="mobile-shop-btn">Shop Now</button>
+                </div>
+
               </SwiperSlide>
             );
           })}
@@ -312,19 +334,39 @@ export default function ModalCard() {
 
       <div className="modal-card-right">
         {items[thumbAt]?.products?.map((product, idx) => (
-          <div
-            className="modal-card-right-product"
-            style={{ position: "absolute", top: product?.position?.top ?? 0, left: product?.position?.left ?? 0 }}
-            key={idx}
-          >
-            <h2>{product?.title}</h2>
-            <h2>{product?.price}</h2>
+          <div className="product-card">
+            <img
+              src={boatAirdopesImage}
+              alt="boAt Airdopes 161 Pro"
+              className="product-card__image"
+            />
+
+            <h2 className="product-card__title">boAt Airdopes 161 Pro</h2>
+
+            <div className="product-card__price">
+              <span className="current">₹1,499</span>
+              <span className="old">₹4,499</span>
+            </div>
+
+            <div className="product-card__colors">
+              <span className="label">Select Color:</span>
+              <div className="color-options">
+                <div className="circle black"></div>
+                <div className="circle blue"></div>
+                <div className="circle green"></div>
+              </div>
+            </div>
+
+            <div className="product-card__desc">
+              <p><strong>BEAST™ Mode</strong></p>
+              <p>60ms Low Latency</p>
+              <p>Dual Pairing</p>
+              <p>50Hrs Playtime</p>
+            </div>
+
+            <button className="add-cart-btn">Add to Cart</button>
           </div>
         ))}
-
-        <div className="add-to-cart-bar">
-          <button className="atc-btn"><span className="cart-icon">🛒</span>Add to Cart</button>
-        </div>
       </div>
 
       <button className="close-button" onClick={handleCloseModal}>X</button>

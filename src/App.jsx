@@ -7,13 +7,13 @@ import { ThumbProvider } from './context/thumb'
 
 function App() {
   return (
-    <ApiProvider>
     <ThumbProvider>
+    <ApiProvider>
     <ModalProvider>
        <Card />
     </ModalProvider>
-    </ThumbProvider>
     </ApiProvider>
+    </ThumbProvider>
   )
 }
 
