@@ -27,7 +27,7 @@
 .card {
   width: min(80vw, 320px);
   height: auto;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 4;
   flex: 0 0 auto;
   border-radius: 25px;
   cursor: pointer;
@@ -35,6 +35,7 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transition: transform .25s ease;
   overflow: hidden;
+  position: relative;
 }
 
 .card img, .card .my-reel {
@@ -42,6 +43,8 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  object-position: center;
+  background-color: transparent;
 }
 
 @media (max-width: 420px) {
