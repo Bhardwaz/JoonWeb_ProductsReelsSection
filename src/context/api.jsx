@@ -45,7 +45,7 @@ export function ApiProvider({ children }) {
     }
 
     // rule: thumbAt >= 3 => load 0..thumbAt
-    const needed = Math.min(thumbAt, total - 1);
+    const needed = Math.min(thumbAt + 1, total - 1);
     if (loadedRef.current < needed) {
       setItems(allItems.slice(0, needed + 1));
       loadedRef.current = needed;

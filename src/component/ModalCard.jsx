@@ -3,61 +3,57 @@ import { useItems } from "../context/api";
 import { useModal } from "../context/modal";
 import { useThumb } from "../context/thumb";
 import "swiper/css";
-import { Mousewheel, Pagination } from "swiper/modules";
+import { Mousewheel } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import boatAirdopesImage from '../assets/boat-airdopes.jpeg';
+import ReelShimmer from "./ReelShimmir";
 
 const MOBILE_BREAKPOINT = 768;
 
 export default function ModalCard() {
-  const { handleCloseModal } = useModal();
-  const { items, appendNext, allItems } = useItems()
+  const { handleCloseModal, handleShimmirUi, isIframeReady } = useModal();
+  const { items, appendNext, allItems } = useItems();
   const { thumbAt, nextThumb, prevThumb } = useThumb();
 
   const playersRef = useRef({});
   const iframesRef = useRef({});
   const prevIndexRef = useRef(thumbAt);
 
-  // states
   const [isMuted, setIsMuted] = useState(true);
   const [playerJsReady, setPlayerJsReady] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth <= MOBILE_BREAKPOINT);
 
-  // --- loading PlayerJS script once ---
+  // --- 1. Load PlayerJS Script ---
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.playerjs) {
       setPlayerJsReady(true);
       return;
     }
-    let mounted = true;
     const s = document.createElement("script");
     s.src = "https://assets.mediadelivery.net/playerjs/playerjs-latest.min.js";
     s.async = true;
-    s.onload = () => { if (mounted) setPlayerJsReady(true); };
-    s.onerror = () => { if (mounted) setPlayerJsReady(false); console.warn("PlayerJS failed to load"); };
+    s.onload = () => setPlayerJsReady(true);
     document.head.appendChild(s);
-    return () => { mounted = false; };
   }, []);
 
-  // --- window resize watcher ---
+  // --- 2. Resize Handler ---
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // --- keyboard handlers ---
+  // --- 3. Keyboard Nav ---
   useEffect(() => {
     const smoothScrollToCenter = () => {
       const el = document.querySelector(".modal-card-left");
-      if (!el) return;
-      el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
     };
     const handleKey = (e) => {
       if (["ArrowRight", "ArrowDown", "d", "s"].includes(e.key)) {
         smoothScrollToCenter();
-        appendNext()
+        appendNext();
         nextThumb(allItems?.length);
       } else if (["ArrowLeft", "ArrowUp", "a", "w"].includes(e.key)) {
         smoothScrollToCenter();
@@ -68,146 +64,112 @@ export default function ModalCard() {
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [nextThumb, prevThumb, handleCloseModal]);
+  }, [nextThumb, prevThumb, handleCloseModal, appendNext, allItems]);
 
-  // --- initialize player for an iframe ---
-  function initPlayerForIframe(iframeEl, idx, activeIndex) {
-    if (!iframeEl) return;
-    iframesRef.current[idx] = iframeEl;
+  const managePlayers = (activeIndex) => {
+    // Loop through all known iframes/players
+    Object.keys(iframesRef.current).forEach((key) => {
+      const idx = parseInt(key);
+      const player = playersRef.current[idx];
+      const iframe = iframesRef.current[idx];
+      
+      const isCurrent = idx === activeIndex;
 
-    // If PlayerJS SDK available, use it
-    if (playerJsReady && window.playerjs) {
-      try {
-        // PlayerJS typically constructed as: new window.playerjs.Player(iframeEl)
-        // but some variants return an object with different API. Be defensive.
-        const player = new window.playerjs.Player(iframeEl);
-        playersRef.current[idx] = player;
-
-        // Ensure background slides are muted; active slide follows global isMuted
-        if (typeof player.mute === "function") {
-          if (idx === activeIndex) {
-            if (isMuted) player.mute();
-            else player.unmute && player.unmute();
-          } else {
-            player.mute();
-          }
-        } else if (typeof player.setMuted === "function") {
-          // alternate API shape
-          if (idx === activeIndex) player.setMuted(!!isMuted);
-          else player.setMuted(true);
+      if (isCurrent) {
+        if (player) {
+          try {
+            player.setCurrentTime(0);
+            if (isMuted) player.mute(); else player.unmute();
+            player.play();
+          } catch (e) { /* ignore */ }
+        } else if (iframe?.contentWindow) {
+          // Fallback if SDK not ready yet
+          iframe.contentWindow.postMessage({ method: "setCurrentTime", value: 0 }, "*");
+          iframe.contentWindow.postMessage({ method: isMuted ? "mute" : "unmute" }, "*");
+          iframe.contentWindow.postMessage({ method: "play" }, "*");
         }
-
-        // Pause by default; we'll play the active one later
-        if (typeof player.pause === "function") player.pause();
-      } catch (err) {
-        console.warn("playerjs init failed for idx", idx, err);
-        playersRef.current[idx] = null;
-      }
-      return;
-    }
-
-    // Fallback: keep iframe DOM for postMessage control
-    playersRef.current[idx] = null;
-  }
-
-  // --- pause all except activeIndex and set mute state appropriately ---
-  function pauseAllExcept(activeIndex) {
-    Object.entries(playersRef.current).forEach(([k, player]) => {
-      const i = Number(k);
-      if (i === activeIndex) return;
-
-      if (player && typeof player.pause === "function") {
-        try {
-          player.pause();
-          if (typeof player.mute === "function") player.mute();
-          else if (typeof player.setMuted === "function") player.setMuted(true);
-        } catch (e) { /* ignore */ }
-        return;
-      }
-
-      // fallback: try postMessage to iframe contentWindow
-      const iframe = iframesRef.current[i];
-      if (iframe && iframe.contentWindow) {
-        try {
+      } else {
+        if (player) {
+          try {
+            player.pause();
+            player.mute(); 
+          } catch (e) { /* ignore */ }
+        }
+        // FORCE PAUSE via raw postMessage (Crucial for ghost audio)
+        if (iframe?.contentWindow) {
           iframe.contentWindow.postMessage({ method: "pause" }, "*");
           iframe.contentWindow.postMessage({ method: "mute" }, "*");
-        } catch (e) { /* ignore */ }
+        }
       }
     });
-
-    // Play and apply mute state for active player
-    const activePlayer = playersRef.current[activeIndex];
-    if (activePlayer && typeof activePlayer.play === "function") {
-      try { activePlayer.play(); } catch (e) { /* ignore */ }
-      try {
-        if (typeof activePlayer.mute === "function") {
-          if (isMuted) activePlayer.mute(); else activePlayer.unmute && activePlayer.unmute();
-        } else if (typeof activePlayer.setMuted === "function") {
-          activePlayer.setMuted(!!isMuted);
-        }
-      } catch (e) { /* ignore */ }
-    } else {
-      const activeIframe = iframesRef.current[activeIndex];
-      if (activeIframe && activeIframe.contentWindow) {
-        try {
-          activeIframe.contentWindow.postMessage({ method: "play" }, "*");
-          activeIframe.contentWindow.postMessage({ method: isMuted ? "mute" : "unmute" }, "*");
-        } catch (e) { /* ignore */ }
-      }
-    }
-  }
-
-  // --- when thumbAt changes, sync players (slight delay to let DOM mount) ---
-  useEffect(() => {
-    const t = setTimeout(() => pauseAllExcept(thumbAt), 100);
-    return () => clearTimeout(t);
-  }, [thumbAt, playerJsReady, isMuted]);
-
-  // --- mobile slide change handler ---
-  const onMobileSlideChange = (swiper) => {
-    const newIndex = swiper.activeIndex;
-    const prevIndex = prevIndexRef.current;
-    if (newIndex === prevIndex) return;
-    if (newIndex > prevIndex) nextThumb();
-    else prevThumb();
-    prevIndexRef.current = newIndex;
-
-    pauseAllExcept(newIndex);
-    appendNext()
   };
 
-  // --- toggle mute for active player ---
-  const toggleMute = () => {
+  // --- 5. Effect: When thumbAt changes, trigger manager ---
+  useEffect(() => {
+    const t = setTimeout(() => {
+      managePlayers(thumbAt);
+    }, 50);
+    return () => clearTimeout(t);
+  }, [thumbAt, playerJsReady]);
+
+  const initPlayer = (iframe, idx) => {
+    if (!iframe || !window.playerjs) return;
+    iframesRef.current[idx] = iframe;
+    
+    // create if not exists
+    if (!playersRef.current[idx]) {
+      try {
+        const player = new window.playerjs.Player(iframe);
+        playersRef.current[idx] = player;
+        
+        player.on('ready', () => {
+           if (idx === thumbAt) {
+             player.setCurrentTime(0);
+             if(isMuted) player.mute(); else player.unmute();
+             player.play();
+           } else {
+             player.pause();
+             player.mute();
+           }
+        });
+      } catch (e) {
+        console.warn("Player init error", e);
+      }
+    } 
+  };
+
+  // --- 7. Overlay Click Handler (Play/Pause Toggle) ---
+  const handleOverlayClick = () => {
+    const activeIdx = isMobile ? prevIndexRef.current : thumbAt;
+    const player = playersRef.current[activeIdx];
+    const iframe = iframesRef.current[activeIdx];
+
+    if (player) {
+      player.getPaused((isPaused) => {
+        if (isPaused) player.play();
+        else player.pause();
+      });
+    } else if (iframe?.contentWindow) {
+      // Fallback toggle
+      iframe.contentWindow.postMessage({ method: "play" }, "*"); 
+    }
+  };
+
+  const handleToggleMute = (e) => {
+    e.stopPropagation();
     const newMuted = !isMuted;
     setIsMuted(newMuted);
-    const activeIndex = isMobile ? (prevIndexRef.current ?? thumbAt) : thumbAt;
-    const activePlayer = playersRef.current[activeIndex];
-
-    if (activePlayer) {
-      try {
-        if (typeof activePlayer.mute === "function") {
-          if (newMuted) activePlayer.mute();
-          else activePlayer.unmute && activePlayer.unmute();
-        } else if (typeof activePlayer.setMuted === "function") {
-          activePlayer.setMuted(!!newMuted);
-        } else {
-          // unknown API: ignore and fall back to postMessage
-          const iframe = iframesRef.current[activeIndex];
-          if (iframe?.contentWindow) iframe.contentWindow.postMessage({ method: newMuted ? "mute" : "unmute" }, "*");
-        }
-      } catch (e) { /* ignore */ }
-      return;
-    }
-
-    // fallback (no SDK): try postMessage
-    const iframe = iframesRef.current[activeIndex];
-    if (iframe && iframe.contentWindow) {
-      try { iframe.contentWindow.postMessage({ method: newMuted ? "mute" : "unmute" }, "*"); } catch (e) { }
+    
+    // Apply immediately to active player
+    const activeIdx = isMobile ? prevIndexRef.current : thumbAt;
+    const player = playersRef.current[activeIdx];
+    if(player) {
+        if(newMuted) player.mute();
+        else player.unmute();
     }
   };
 
-  // guard: nothing to render
-  if (!items || items.length === 0 || !items[thumbAt] || !items[thumbAt].videoUrl) return null;
+  if (!items || !items[thumbAt]) return null;
 
   return (
     <div className="modal-card-container">
@@ -215,161 +177,114 @@ export default function ModalCard() {
         <Swiper
           direction="vertical"
           slidesPerView={1}
-          spaceBetween={30}
           mousewheel
-          modules={[Mousewheel, Pagination]}
+          modules={[Mousewheel]}
           className="modal-card-left mySwiper"
           initialSlide={thumbAt}
-          onSlideChange={onMobileSlideChange}
+          onSlideChange={(swiper) => {
+            const newIndex = swiper.activeIndex;
+            prevIndexRef.current = newIndex;
+            
+            if (newIndex > thumbAt) nextThumb();
+            else if (newIndex < thumbAt) prevThumb();
+            
+            appendNext();
+            managePlayers(newIndex);
+          }}
         >
-          {items.map((item, idx) => {
-            const iframeId = `bunny-video-${item.id ?? idx}`;
-            return (
-              <SwiperSlide key={item.id ?? idx}>
-                <div className="iframe-wrapper">
-                  <div className="iframe-block-overlay" attr="overlay" />
-                  <iframe
-                    id={iframeId}
-                    ref={(el) => {
-                      if (el) {
-                        iframesRef.current[idx] = el;
-                        // if SDK is ready and player not yet created, init (covers script loaded after DOM)
-                        const activeIndex = prevIndexRef.current ?? thumbAt;
-                        if (playerJsReady && !playersRef.current[idx]) initPlayerForIframe(el, idx, activeIndex);
-                      }
-                    }}
-                    data-index={idx}
-                    className="modal-card-left-iframe loading"
-                    src={item.videoUrl}
-                    key={item.id ?? idx}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
-                    allowFullScreen
-                    style={{ width: "100%", height: "100%", border: 0, display: "block" }}
-                    onLoad={(e) => {
-                      e.target.classList.add("loaded");
-                      // init player after load
-                      const activeIndex = prevIndexRef.current ?? thumbAt;
-                      if (!playersRef.current[idx] && playerJsReady) initPlayerForIframe(e.target, idx, activeIndex);
+          {items.map((item, idx) => (
+            <SwiperSlide key={item.id ?? idx}>
+              <div className="iframe-wrapper" style={{ position: 'relative', width: '100%', height: '100%' }}>
+              
+              { !isIframeReady && <ReelShimmer />  }
 
-                      // if this slide is active, ensure others paused and its mute state applied
-                      if (activeIndex === idx) {
-                        pauseAllExcept(activeIndex);
-                        const activePlayer = playersRef.current[activeIndex];
-                        if (activePlayer) {
-                          try {
-                            if (typeof activePlayer.mute === "function") {
-                              if (isMuted) activePlayer.mute(); else activePlayer.unmute && activePlayer.unmute();
-                            } else if (typeof activePlayer.setMuted === "function") {
-                              activePlayer.setMuted(!!isMuted);
-                            }
-                          } catch (e) { /* ignore */ }
-                        } else {
-                          const iframe = iframesRef.current[activeIndex];
-                          if (iframe?.contentWindow) iframe.contentWindow.postMessage({ method: isMuted ? "mute" : "unmute" }, "*");
-                        }
-                      }
-                    }}
-                  />
-                </div>
-                <div className="mobile-product-bar">
+                <div 
+                  className="iframe-block-overlay" 
+                  onClick={handleOverlayClick}
+                  style={{ position: 'absolute', inset: 0, zIndex: 10, background: 'transparent' }} 
+                />
+                <iframe
+                  ref={(el) => initPlayer(el, idx)}
+                  onLoad={handleShimmirUi}
+                  className="modal-card-left-iframe"
+                  src={`${item.videoUrl}?autoplay=true&loop=true&muted=false&preload=true`} 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"  
+                  allowFullScreen
+                  style={{ width: "100%", height: "100%", border: 0, display: "block"}}
+                />
+              </div>
+
+              {/* Mobile Product UI */}
+              {
+                 isIframeReady &&  <div className="mobile-product-bar" style={{ pointerEvents: 'none' }}>
                   <img
                     className="mobile-product-thumb"
-                    src={items[thumbAt]?.products?.[0]?.image || boatAirdopesImage}
-                    alt={items[thumbAt]?.products?.[0]?.title || "Product"}
+                    src={items[idx]?.products?.[0]?.image || boatAirdopesImage}
+                    alt="Product"
                   />
-
-                  <div className="mobile-product-info">
-                    <div className="mobile-product-title">
-                      {items[thumbAt]?.products?.[0]?.title || "boAt Airdopes 161 Pro"}
-                    </div>
-
+                  <div className="mobile-product-info" style={{ pointerEvents: 'auto' }}>
+                    <div className="mobile-product-title">{item?.products?.[0]?.title || "Product Title"}</div>
                     <div className="mobile-product-price">
-                      <span className="mobile-current">₹1,499</span>
-                      <span className="mobile-old">₹4,499</span>
+                      <span className="mobile-current">{item?.products[0].price}</span>
                     </div>
                   </div>
+                  <button className="mobile-shop-btn" style={{ pointerEvents: 'auto' }}>Shop Now</button>
+              </div>
 
-                  <button className="mobile-shop-btn">Shop Now</button>
-                </div>
-
-              </SwiperSlide>
-            );
-          })}
-
-          <div className="mute-btn" onClick={toggleMute} style={{ zIndex: 20 }}>{isMuted ? "🔇" : "🔊"}</div>
-
-          <div className="mobile-add-to-cart-bar">
-            <button className="mobile-atc-btn"><span className="mobile-cart-icon">🛒</span>Add to Cart</button>
+              }
+            </SwiperSlide>
+          ))}
+          
+          {
+            isIframeReady && <div className="mute-btn" onClick={handleToggleMute} style={{ zIndex: 50 }}>
+            { isMuted ? "🔇" : "🔊"}
           </div>
+          }
+          
         </Swiper>
       ) : (
+        // DESKTOP VIEW
         <div className="modal-card-left">
-          <div className="swipe-catcher" style={{ height: "100vh", width: "100%" }}>
-            <div className="mute-btn" onClick={toggleMute} style={{ zIndex: 20 }}>{isMuted ? "🔇" : "🔊"}</div>
-            <div className="iframe-wrapper">
-              <iframe
-                id={`bunny-video-desktop-${items[thumbAt].id ?? thumbAt}`}
-                ref={(el) => {
-                  if (el) {
-                    iframesRef.current[thumbAt] = el;
-                    if (playerJsReady && !playersRef.current[thumbAt]) initPlayerForIframe(el, thumbAt, thumbAt);
-                  }
-                }}
-                className="modal-card-left-iframe loading"
-                src={items[thumbAt].videoUrl}
-                key={items[thumbAt].id ?? thumbAt}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
-                allowFullScreen
-                style={{ width: "100%", height: "100%", border: 0, display: "block" }}
-                onLoad={(e) => {
-                  e.target.classList.add("loaded");
-                  if (!playersRef.current[thumbAt] && playerJsReady) initPlayerForIframe(e.target, thumbAt, thumbAt);
-                  pauseAllExcept(thumbAt);
-                }}
-              />
-            </div>
+          <div className="swipe-catcher" style={{ height: "100vh", width: "100%", position: 'relative' }}>
+             <div className="mute-btn" onClick={handleToggleMute} style={{ zIndex: 50 }}>
+                {isMuted ? "🔇" : "🔊"}
+             </div>
+             
+             <div className="iframe-wrapper" style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <div 
+                  className="iframe-block-overlay" 
+                  onClick={handleOverlayClick}
+                  style={{ position: 'absolute', inset: 0, zIndex: 10 }} 
+                />
+                <iframe
+                  ref={(el) => initPlayer(el, thumbAt)}
+                  id={`bunny-video-desktop-${items[thumbAt].id ?? thumbAt}`}
+                  className="modal-card-left-iframe"
+                  src={`${items[thumbAt].videoUrl}?autoplay=false&loop=true&muted=true&preload=true`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
+                  allowFullScreen
+                  style={{ width: "100%", height: "100%", border: 0, display: "block" }}
+                  onLoad={(e) => managePlayers(thumbAt)}
+                />
+             </div>
           </div>
         </div>
       )}
 
+      {/* RIGHT SIDE (Product Details) */}
       <div className="modal-card-right">
         {items[thumbAt]?.products?.map((product, idx) => (
-          <div className="product-card">
-            <img
-              src={boatAirdopesImage}
-              alt="boAt Airdopes 161 Pro"
-              className="product-card__image"
-            />
-
+          <div className="product-card" key={idx}>
+            <img src={boatAirdopesImage} alt="Product" className="product-card__image" />
             <h2 className="product-card__title">boAt Airdopes 161 Pro</h2>
-
             <div className="product-card__price">
-              <span className="current">₹1,499</span>
+              <span className="current">{product?.price}</span>
               <span className="old">₹4,499</span>
             </div>
-
-            <div className="product-card__colors">
-              <span className="label">Select Color:</span>
-              <div className="color-options">
-                <div className="circle black"></div>
-                <div className="circle blue"></div>
-                <div className="circle green"></div>
-              </div>
-            </div>
-
-            <div className="product-card__desc">
-              <p><strong>BEAST™ Mode</strong></p>
-              <p>60ms Low Latency</p>
-              <p>Dual Pairing</p>
-              <p>50Hrs Playtime</p>
-            </div>
-
             <button className="add-cart-btn">Add to Cart</button>
           </div>
         ))}
       </div>
-
-      <button className="close-button" onClick={handleCloseModal}>X</button>
     </div>
   );
 }

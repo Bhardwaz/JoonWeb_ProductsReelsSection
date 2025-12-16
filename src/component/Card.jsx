@@ -19,7 +19,6 @@ const Card = () => {
     if (!element) return
 
     const obs = new IntersectionObserver((entries) => {
-      console.log(entries, "entries")
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           setLoaded(true);
