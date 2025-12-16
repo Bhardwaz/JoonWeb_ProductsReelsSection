@@ -16,6 +16,15 @@ The React Compiler is not enabled on this template because of its impact on dev 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
 
+<div className="product-card" key={idx}>
+            <img src={boatAirdopesImage} alt="Product" className="product-card__image" />
+            <h2 className="product-card__title">boAt Airdopes 161 Pro</h2>
+            <div className="product-card__price">
+              <span className="current">{product?.price}</span>
+              <span className="old">₹4,499</span>
+            </div>
+            <button className="add-cart-btn">Add to Cart</button>
+          </div>
 
 bunny playerjs -> step 1 - Loading Playerjs globally
 

@@ -6,9 +6,10 @@ import "swiper/css";
 import { Mousewheel } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import boatAirdopesImage from '../assets/boat-airdopes.jpeg';
-import ReelShimmer from "./ReelShimmir";
-
-const MOBILE_BREAKPOINT = 768;
+import ReelShimmer from "../shimmir/ReelShimmir";
+import { useResize } from "../context/resize";
+import ProductDetail from "./ProductDetails";
+import ProductShimmer from "../shimmir/ProductShimmir";
 
 export default function ModalCard() {
   const { handleCloseModal, handleShimmirUi, isIframeReady } = useModal();
@@ -19,9 +20,9 @@ export default function ModalCard() {
   const iframesRef = useRef({});
   const prevIndexRef = useRef(thumbAt);
 
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [playerJsReady, setPlayerJsReady] = useState(false);
-  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth <= MOBILE_BREAKPOINT);
+  const { isMobile } = useResize()
 
   // --- 1. Load PlayerJS Script ---
   useEffect(() => {
@@ -37,13 +38,7 @@ export default function ModalCard() {
     document.head.appendChild(s);
   }, []);
 
-  // --- 2. Resize Handler ---
-  useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
+ 
   // --- 3. Keyboard Nav ---
   useEffect(() => {
     const smoothScrollToCenter = () => {
@@ -256,6 +251,7 @@ export default function ModalCard() {
                   onClick={handleOverlayClick}
                   style={{ position: 'absolute', inset: 0, zIndex: 10 }} 
                 />
+                { !isIframeReady && <ReelShimmer /> }
                 <iframe
                   ref={(el) => initPlayer(el, thumbAt)}
                   id={`bunny-video-desktop-${items[thumbAt].id ?? thumbAt}`}
@@ -264,7 +260,10 @@ export default function ModalCard() {
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
                   allowFullScreen
                   style={{ width: "100%", height: "100%", border: 0, display: "block" }}
-                  onLoad={(e) => managePlayers(thumbAt)}
+                  onLoad={(e) => {
+                    managePlayers(thumbAt)
+                    handleShimmirUi()
+                  }}
                 />
              </div>
           </div>
@@ -273,17 +272,13 @@ export default function ModalCard() {
 
       {/* RIGHT SIDE (Product Details) */}
       <div className="modal-card-right">
-        {items[thumbAt]?.products?.map((product, idx) => (
-          <div className="product-card" key={idx}>
-            <img src={boatAirdopesImage} alt="Product" className="product-card__image" />
-            <h2 className="product-card__title">boAt Airdopes 161 Pro</h2>
-            <div className="product-card__price">
-              <span className="current">{product?.price}</span>
-              <span className="old">₹4,499</span>
-            </div>
-            <button className="add-cart-btn">Add to Cart</button>
-          </div>
-        ))}
+        {
+          !items[thumbAt]?.products.length === 0 ? (
+            <ProductShimmer />
+          ): items[thumbAt]?.products?.map((product, idx) => (
+           <ProductDetail key={idx} product={product} />
+        ))
+      }
       </div>
     </div>
   );

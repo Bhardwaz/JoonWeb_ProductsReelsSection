@@ -13,6 +13,13 @@
   z-index: 10;
 }
 
+.shimmer-main-body {
+  flex: 1;          
+  width: 100%;      
+  margin: 20px 0;  
+  border-radius: 12px;
+}
+
 /* The global shimmer animation */
 .shimmer-icon-square, .shimmer-main-body, .shimmer-badge, 
 .shimmer-text-line, .shimmer-product-image, .shimmer-button {
@@ -95,4 +102,12 @@
   height: 45px;
   border-radius: 12px;
   background: #222 !important; /* Fixed dark color for the 'Shop Now' button */
+}
+
+@media (min-width: 1024px) {
+  .shimmer-main-body {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

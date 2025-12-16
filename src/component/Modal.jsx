@@ -3,17 +3,16 @@ import { useItems } from "../context/api";
 import { useModal } from "../context/modal";
 import { useThumb } from "../context/thumb";
 import "./Modal.css"
-import ReelShimmer from "./ReelShimmir";
 
 const Reels = React.lazy(() => import("./ModalCard"))
 
 const Modal = () => {
     const { thumbAt, prevThumb, nextThumb, setThumb } = useThumb()
     const { allItems, appendNext } = useItems()
-    const { handleCloseModal, isIframeReady } = useModal();
+    const { handleCloseModal } = useModal();
 
-    const prev = thumbAt - 1 < 0 ? null : thumbAt - 1;
-    const next = thumbAt + 1 >= allItems.length ? null : thumbAt + 1;
+    const prev = (thumbAt - 1 + allItems.length) % allItems.length;
+    const next =  (thumbAt + 1) % allItems.length;
     
     const handleNext = () => { 
         appendNext()
@@ -48,7 +47,7 @@ const Modal = () => {
             <div className="arrow-btn right-arrow" onClick={() => handleNext()}>
                 →
             </div>
-          { isIframeReady &&  <button className="close-button" onClick={handleCloseModal}> &times; </button> }
+          {<button className="close-button" onClick={handleCloseModal}> &times; </button> }
         </div>
     )
 }
