@@ -4,15 +4,21 @@ import "./Card.css";
 import { useModal } from "../context/modal";
 import Modal from "./Modal";
 import { useThumb } from "../context/thumb";
+import { useZoom } from "../hooks/useZoom";
+
+const zoom15 = {
+  "width":"30rem"
+}
 
 const Card = () => {
-  const { allItems } = useItems() || {}; 
-  
+  const { allItems } = useItems() || {};
+
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const { openModal, handleOpenModal } = useModal();
   const { setThumb } = useThumb()
   const ref = useRef()
   const [loaded, setLoaded] = useState(false)
+  const zoom = useZoom()
 
   useEffect(() => {
     const element = ref.current
@@ -35,9 +41,9 @@ const Card = () => {
     handleOpenModal()
     setThumb(index)
   }
-  
+
   return (
-    <div ref={ref}> 
+    <div ref={ref}>
       {
         loaded ? (
           <div className="card-container">

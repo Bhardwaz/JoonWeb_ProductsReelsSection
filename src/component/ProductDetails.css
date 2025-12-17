@@ -12,18 +12,18 @@
 .product-scroll-area {
   flex: 1;
   overflow-y: auto;
-  padding: 30px;
+  padding: 1.2rem;
   /* Thin scrollbar for a clean desktop look */
   scrollbar-width: thin;
 }
 
 .product-scroll-area::-webkit-scrollbar {
-  width: 6px;
+  width: .6rem;
 }
 
 .product-scroll-area::-webkit-scrollbar-thumb {
   background: #e0e0e0;
-  border-radius: 10px;
+  border-radius: 1.6rem;
 }
 
 /* Image Styling */
@@ -31,7 +31,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 2.2rem;
 }
 
 .main-product-img {
@@ -42,36 +42,36 @@
 
 /* Typography */
 .product-title {
-  font-size: 24px;
+  font-size: 2.5rem;
   font-weight: 700;
   color: #1a1a1a;
-  margin-bottom: 8px;
+  margin-bottom: 1.2rem;
 }
 
 .product-price-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 25px;
+  gap: 2rem;
+  margin-bottom: 4rem;
 }
 
 .current-price {
-  font-size: 22px;
+  font-size: 2.4rem;
   font-weight: 800;
   color: #000;
 }
 
 .original-price {
-  font-size: 16px;
+  font-size: 2rem;
   text-decoration: line-through;
   color: #757575;
 }
 
 .section-label {
-  font-size: 15px;
+  font-size: 2.0rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 12px;
+  margin-bottom: 2rem;
 }
 
 .section-label span {
@@ -82,15 +82,15 @@
 /* Color Dots */
 .color-options {
   display: flex;
-  gap: 12px;
-  margin-bottom: 30px;
+  gap: 2rem;
+  margin-bottom: 4.8rem;
 }
 
 .color-dot {
-  width: 36px;
-  height: 36px;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: .4rem solid transparent;
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -104,24 +104,25 @@
 
 /* Description Specs */
 .specs-list {
-  padding-left: 18px;
+  padding-left: 3rem;
   color: #333;
   line-height: 1.8;
+  font-size: 1.6rem;
 }
 
 .sub-spec {
   list-style: none;
-  font-size: 14px;
+  font-size: 2rem;
   color: #666;
-  margin-bottom: 8px;
+  margin-bottom: 1.2rem;
 }
 
 /* Sticky Footer */
 .product-actions-footer {
-  padding: 20px 30px;
-  border-top: 1px solid #eee;
+  padding: 3.2rem 4.8rem;
+  border-top: .3rem solid #eee;
   display: flex;
-  gap: 12px;
+  gap: 2rem;
   background: #fff;
 }
 
@@ -130,18 +131,18 @@
   background-color: #1a2024;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 14px;
-  font-size: 16px;
+  border-radius: 1.2rem;
+  padding: 1rem;
+  font-size: 2.4rem;
   font-weight: 700;
   cursor: pointer;
 }
 
 .cart-icon-btn {
-  width: 50px;
+  width: 7.0rem;
   background: none;
-  border: 1px solid #d1d1d1;
-  border-radius: 8px;
+  border: .1rem solid #d1d1d1;
+  border-radius: .8rem;
   display: flex;
   align-items: center;
   justify-content: center;

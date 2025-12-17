@@ -3,6 +3,7 @@ import { useItems } from "../context/api";
 import { useModal } from "../context/modal";
 import { useThumb } from "../context/thumb";
 import "./Modal.css"
+import { useZoom } from "../hooks/useZoom";
 
 const Reels = React.lazy(() => import("./ModalCard"))
 

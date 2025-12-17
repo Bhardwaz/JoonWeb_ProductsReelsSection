@@ -3,8 +3,6 @@
   inset: 0;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
   background: rgba(0, 0, 0, .5);
   display: flex;
   justify-content: center;
@@ -15,8 +13,8 @@
 }
 
 .modal-card-container {
-  width: 700px;
-  max-width: 700px;
+  width: 70rem;
+  max-width: 70rem;
   height: 100vh;
   display: flex;
   border-radius: 2rem;
@@ -53,7 +51,7 @@
 }
 
 .modal-card-left {
-  width: 350px;
+  width: 35rem;
   height: 100%;
   position: relative;
   overflow: hidden;
@@ -95,7 +93,7 @@
 }
 
 .modal-card-right {
-  width: 350px;
+  width: 35rem;
   height: 100%;
   background-color: beige;
   color: black;
@@ -103,99 +101,6 @@
   border-bottom-right-radius: 0.5rem;
   position: relative;
   overflow: hidden;
-}
-
-.product-card {
-  width: 350px;
-  background: #fff;
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: sticky;
-  top: 20px;
-  font-family: sans-serif;
-}
-
-.product-card__image {
-  width: 100%;
-  object-fit: contain;
-}
-
-.product-card__title {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.product-card__price {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.product-card__price .current {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.product-card__price .old {
-  text-decoration: line-through;
-  opacity: 0.6;
-}
-
-.product-card__colors {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.color-options {
-  display: flex;
-  gap: 10px;
-}
-
-.circle {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #e2e2e2;
-}
-
-.circle.black {
-  background: #000;
-}
-
-.circle.blue {
-  background: #0a6cff;
-}
-
-.circle.green {
-  background: #1abc5b;
-}
-
-.product-card__desc p {
-  margin: 4px 0;
-  font-size: 14px;
-  line-height: 1.3;
-}
-
-.add-cart-btn {
-  background: #111;
-  color: #fff;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 12px;
-}
-
-.add-cart-btn:hover {
-  background: #000;
 }
 
 .prev-thumb,
@@ -210,10 +115,10 @@
 
 .close-button {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 40px;
-  height: 40px;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 4rem;
+  height: 4rem;
   padding: 0;
 
   background-color: rgba(0, 0, 0, 0.7);
@@ -222,7 +127,7 @@
   cursor: pointer;
 
   color: #fff;
-  font-size: 24px;
+  font-size: 2.4rem;
   line-height: 1;
   font-weight: 700;
   display: flex;
@@ -244,7 +149,7 @@
 }
 
 .close-button:focus-visible {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #007bff;
+  box-shadow: 0 0 0 .2rem #fff, 0 0 0 .4rem #007bff;
 }
 
 .close-button:active {
@@ -255,7 +160,7 @@
 
 .add-to-cart-bar {
   position: absolute;
-  bottom: 20px;
+  bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
@@ -267,17 +172,17 @@
   width: 100%;
   background: #000;
   color: #fff;
-  padding: 14px 18px;
+  padding: 1.4rem 1.8rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 1.2rem;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  gap: 1rem;
+  box-shadow: 0 .6rem 1.8rem rgba(0, 0, 0, 0.25);
 }
 
 .cart-icon {
@@ -289,14 +194,14 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
+  width: 7.4rem;
+  height: 7.4rem;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
   border: none;
   cursor: pointer;
-  font-size: 32px;
+  font-size: 5.2rem;
   font-weight: 600;
   display: flex;
   justify-content: center;
@@ -313,23 +218,23 @@
 }
 
 .left-arrow {
-  left: 16px;
+  left: 1.6rem;
 }
 
 .right-arrow {
-  right: 16px;
+  right: 1.6rem;
 }
 
 .mute-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 1.2rem;
+  right: 1.2rem;
   z-index: 999;
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
-  padding: 8px 10px;
+  padding: .8rem 1rem;
   border-radius: 50%;
-  font-size: 20px;
+  font-size: 2rem;
   cursor: pointer;
   user-select: none;
   display: flex;
@@ -348,7 +253,7 @@
   height: 100vh;
 }
 
-@media (max-width: 650px) {
+@media (max-width: 65rem) {
 
   .modal-card-container {
     width: 100%;
@@ -376,13 +281,13 @@
 
   .mobile-atc-btn {
     width: 100%;
-    padding: 14px 18px;
+    padding: 1.4rem 1.8rem;
     border: none;
-    border-radius: 14px;
+    border-radius: 1.4rem;
 
     background: rgba(0, 0, 0, 0.82);
     /* deep black glass */
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(.6rem);
 
     color: white;
     font-size: 1.05rem;
@@ -392,11 +297,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 1rem;
 
     box-shadow:
-      0 4px 14px rgba(0, 0, 0, 0.35),
-      0 0 0 1px rgba(255, 255, 255, 0.08);
+      0 .4rem 1.4rem rgba(0, 0, 0, 0.35),
+      0 0 0 .1rem rgba(255, 255, 255, 0.08);
     /* subtle premium stroke */
 
     transition: transform 0.18s ease, background 0.18s ease;
@@ -426,48 +331,48 @@
 
   /* TODOS: this also need to be checked later */
   .modal-card-right h2 {
-    font-size: 16px;
-    margin: 6px 0;
+    font-size: 1.6rem;
+    margin: .6rem 0;
   }
 
   .modal-card-right .price {
-    font-size: 18px;
+    font-size: 1.8rem;
   }
 
   .mute-btn {
     bottom: unset !important;
-    top: 10px !important;
-    left: 30px;
+    top: 1rem !important;
+    left: 3rem;
     right: unset;
   }
 
   .close-button {
-    top: 16px;
-    right: 16px;
+    top: 1.6rem;
+    right: 1.6rem;
   }
 }
 
 .mobile-product-bar {
   position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 80px;
+  left: 1.2rem;
+  right: 1.2rem;
+  bottom: 8rem;
   z-index: 9999;
   display: flex;
-  gap: 12px;
+  gap: 1.2rem;
   align-items: center;
   background: rgba(255, 255, 255, 0.97);
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(6px);
+  padding: 1rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(.6rem);
 }
 
 .mobile-product-thumb {
-  width: 56px;
-  height: 56px;
+  width: 5.6rem;
+  height: 5.6rem;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: .8rem;
 }
 
 .mobile-product-info {
@@ -477,7 +382,7 @@
 
 .mobile-product-title {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 1.4rem;
   white-space: nowrap;
   overflow: hidden;
   color: #000;
@@ -485,12 +390,12 @@
 }
 
 .mobile-product-price {
-  font-size: 13px;
+  font-size: 1.3rem;
   color: #111;
 }
 
 .mobile-old {
-  margin-left: 6px;
+  margin-left: .6rem;
   opacity: 0.6;
   text-decoration: line-through;
 }
@@ -498,8 +403,8 @@
 .mobile-shop-btn {
   background: rgba(0, 0, 0, .85);
   color: #fff;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 1rem 1.4rem;
+  border-radius: 1rem;
   font-weight: 600;
   border: none;
   cursor: pointer;
