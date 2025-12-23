@@ -7,11 +7,11 @@ import { useThumb } from "../context/thumb";
 import { useZoom } from "../hooks/useZoom";
 
 const zoom15 = {
-  "width":"30rem"
+  "width": "30rem"
 }
 
 const Card = () => {
-  const { allItems } = useItems() || {};
+  const { allGroups, visibleReels, setActiveGroupId, activeGroupId } = useItems() || {};
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const { openModal, handleOpenModal } = useModal();
@@ -43,37 +43,59 @@ const Card = () => {
   }
 
   return (
-    <div ref={ref}>
-      {
-        loaded ? (
-          <div className="card-container">
-            {allItems.map((item, idx) => (
-              <div
-                className="card"
-                key={item.id ?? idx}
-                onMouseEnter={() => setHoveredIndex(idx)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                {hoveredIndex === idx ? (
-                  <img
-                    className="my-reel"
-                    src={item.previewAnimationUrl}
-                    onClick={() => handleClick(idx)}
-                  />
-                ) : (
-                  <img
-                    className="thumb"
-                    src={item.thumbnailUrl}
-                    alt={item.title ?? "thumbnail"}
-                    loading="lazy"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        ) : <div> "Loading" </div>
-      }
-      {openModal && <Modal />}
+    <div className="card-parent">
+      <div className="group-tab-row">
+        <button
+          className={`group-tab ${activeGroupId === null ? "active" : ""}`}
+          onClick={() => setActiveGroupId(null)}
+        >
+          All
+        </button>
+
+        {allGroups.map(group => (
+          <button
+            key={group._id}
+            className={`group-tab ${activeGroupId === group._id ? "active" : ""}`}
+            onClick={() => setActiveGroupId(group._id)}
+          >
+            {group.name}
+          </button>
+        ))}
+      </div>
+
+
+      <div ref={ref}>
+        {
+          loaded ? (
+            <div className="card-container">
+              {visibleReels?.map((item, idx) => (
+                <div
+                  className="card"
+                  key={item.id ?? idx}
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  {hoveredIndex === idx ? (
+                    <img
+                      className="my-reel"
+                      src={item.previewAnimationUrl}
+                      onClick={() => handleClick(idx)}
+                    />
+                  ) : (
+                    <img
+                      className="thumb"
+                      src={item.thumbnailUrl}
+                      alt={item.title ?? "thumbnail"}
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : <div> "Loading" </div>
+        }
+        {openModal && <Modal />}
+      </div>
     </div>
   );
 };

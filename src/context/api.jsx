@@ -1,22 +1,24 @@
 // context/api.jsx
 import axios from "axios";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useThumb } from "./thumb";
 
 const ApiContext = createContext();
 
 export function ApiProvider({ children }) {
-  const url = "https://api2.joonweb.com/videos.json";
+  const url = "http://localhost:3000/api/reels/getAll";
   const { thumbAt } = useThumb(); // you said thumbAt is available here
 
   const [allItems, setAllItems] = useState([]);
   const [items, setItems] = useState([]);
   const loadedRef = useRef(-1); // highest loaded index
+  const [allGroups, setAllGroups] = useState([])
+  const [activeGroupId, setActiveGroupId] = useState(null)
 
   useEffect(() => {
     let mounted = true;
     axios.get(url)
-      .then(res => Array.isArray(res.data) ? res.data : [])
+      .then(res => res.data.reels)
       .then(data => {
         if (!mounted) return;
         setAllItems(data);
@@ -24,6 +26,7 @@ export function ApiProvider({ children }) {
       .catch(err => {
         console.error("[ApiProvider] fetch error:", err);
       });
+      getAllGroups()
     return () => { mounted = false; };
   }, []);
 
@@ -74,8 +77,21 @@ export function ApiProvider({ children }) {
     return true;
   }
 
+  async function getAllGroups(params) {
+      try {
+        const res = await axios.get("http://localhost:3000/api/reels/getGroups")
+        setAllGroups(res?.data?.groups)
+      } catch (error) {
+        console.log(error) 
+      }
+  }
+
+  const visibleReels = useMemo(() => {
+   return activeGroupId === null ? allItems : allItems?.filter(item => item.group.includes(activeGroupId))
+  }, [activeGroupId, allItems])
+  
   return (
-    <ApiContext.Provider value={{ allItems, items, appendNext }}>
+    <ApiContext.Provider value={{ allItems, items, appendNext, allGroups, visibleReels, setActiveGroupId, activeGroupId }}>
       {children}
     </ApiContext.Provider>
   );

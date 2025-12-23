@@ -1,3 +1,38 @@
+.card-parent{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.group-tab-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.group-tab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.group-tab:hover {
+  background: #f9fafb;
+}
+
+.group-tab.active {
+  background: black;
+  color: white;
+  border-color: black;
+}
+
 .card-container {
   display: flex;
   flex-wrap: nowrap;
