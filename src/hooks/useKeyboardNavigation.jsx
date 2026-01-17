@@ -1,15 +1,15 @@
 import { useEffect, useRef } from "react";
+import { useViewerStore } from "../store/useViewerStore";
 
 const THROTTLE_MS = 500;
 
 export function useKeyboardNavigation({
-    nextThumb,
-    prevThumb,
-    appendNext,
-    allItems,
+    filteredList,
     handleCloseModal
 })  {
     const lastKeyTimeRef = useRef(0)
+    const nextSlide = useViewerStore((state) => state.nextSlide);
+    const prevSlide = useViewerStore((state) => state.prevSlide);
      
     const smoothScrollToCenter = () => {
       const el = document.querySelector(".modal-card-left");
@@ -29,13 +29,12 @@ export function useKeyboardNavigation({
             if(actions[e.key] === "NEXT") {
                 lastKeyTimeRef.current = now
                 smoothScrollToCenter()
-                appendNext()
-                nextThumb(allItems?.length)
+                nextSlide(filteredList?.items?.length)
             } 
             if(actions[e.key] === 'PREV'){
                 smoothScrollToCenter()
                 lastKeyTimeRef.current = now
-                prevThumb(allItems?.length)
+                prevSlide(filteredList?.items?.length)
             }
             if(e.key === 'Escape'){
                handleCloseModal()
@@ -43,5 +42,5 @@ export function useKeyboardNavigation({
         }
         window.addEventListener("keydown", handleKey)
         return () => window.removeEventListener("keydown", handleKey)
-    }, [ nextThumb, prevThumb, appendNext, allItems, handleCloseModal])
+    }, [filteredList, handleCloseModal])
 }

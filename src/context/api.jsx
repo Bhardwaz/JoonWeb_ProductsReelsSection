@@ -1,34 +1,31 @@
 // context/api.jsx
-import axios from "axios";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useThumb } from "./thumb";
+import { useReels } from "../hooks/useReels";
+import { useGroupsContext } from "./groups";
 
 const ApiContext = createContext();
 
 export function ApiProvider({ children }) {
-  const url = "http://localhost:3000/api/reels/getAll";
-  const { thumbAt } = useThumb(); // you said thumbAt is available here
+  // getting active group id
+  const { activeGroupId } = useGroupsContext()
+
+  const { thumbAt } = useThumb();
 
   const [allItems, setAllItems] = useState([]);
   const [items, setItems] = useState([]);
   const loadedRef = useRef(-1); // highest loaded index
-  const [allGroups, setAllGroups] = useState([])
-  const [activeGroupId, setActiveGroupId] = useState(null)
+  const [products, setProducts] = useState([])
+  let [visibleReels, setVisibleReels] = useState([])
+  let [visibleReelsWithProduct, setVisibleReelsWithProduct] = useState([])
+   
+  const { data, isLoading, isError, isFetching,  error, refetch } = useReels()
 
   useEffect(() => {
-    let mounted = true;
-    axios.get(url)
-      .then(res => res.data.reels)
-      .then(data => {
-        if (!mounted) return;
-        setAllItems(data);
-      })
-      .catch(err => {
-        console.error("[ApiProvider] fetch error:", err);
-      });
-      getAllGroups()
-    return () => { mounted = false; };
-  }, []);
+    if(!data) return
+    setAllItems(data.reels)
+    setProducts(data.products)
+  }, [data])
 
   // core reaction: set items based on thumbAt and allItems
   useEffect(() => {
@@ -61,37 +58,41 @@ export function ApiProvider({ children }) {
   // append exactly one next item (callable from consumer)
   async function appendNext() {
     // ensure we have allItems
-    if (!Array.isArray(allItems) || allItems.length === 0) {
+    if (!Array.isArray(visibleReels) || visibleReels.length === 0) {
       // nothing to append
       return false;
     }
     const next = loadedRef.current + 1;
-    if (!allItems[next]) return false;
+    if (!visibleReels[next]) return false;
 
-    setItems(prev => {
+    setVisibleReels(prev => {
       // avoid duplicate append
-      if (prev.length > 0 && prev[prev.length - 1] === allItems[next]) return prev;
-      return [...prev, allItems[next]];
+      if (prev.length > 0 && prev[prev.length - 1] === visibleReels[next]) return prev;
+      return [...prev, visibleReels[next]];
     });
     loadedRef.current = next;
     return true;
   }
 
-  async function getAllGroups(params) {
-      try {
-        const res = await axios.get("http://localhost:3000/api/reels/getGroups")
-        setAllGroups(res?.data?.groups)
-      } catch (error) {
-        console.log(error) 
-      }
-  }
-
-  const visibleReels = useMemo(() => {
-   return activeGroupId === null ? allItems : allItems?.filter(item => item.group.includes(activeGroupId))
+  visibleReels = useMemo(() => {
+    return activeGroupId === null ? allItems : allItems?.filter(item => item.group.includes(activeGroupId))
   }, [activeGroupId, allItems])
-  
+
+  /// constructing reels + product here 
+  visibleReelsWithProduct = useMemo(() => {
+    return visibleReels?.map(reel => {
+      return {
+        ...reel,
+        product: reel.productId ? products[reel.productId] : null
+      };
+    });
+  }, [visibleReels, products]);
+
+  console.log(products, "products through apis")
+  console.log(visibleReelsWithProduct, "visible reels with product")
+ 
   return (
-    <ApiContext.Provider value={{ allItems, items, appendNext, allGroups, visibleReels, setActiveGroupId, activeGroupId }}>
+    <ApiContext.Provider value={{ allItems, items, appendNext, visibleReelsWithProduct, products, isLoading, isError, isFetching,  error, refetch }}>
       {children}
     </ApiContext.Provider>
   );
