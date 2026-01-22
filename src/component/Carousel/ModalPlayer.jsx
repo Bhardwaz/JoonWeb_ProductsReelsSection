@@ -17,7 +17,6 @@ import VideoProductOverlay from "./VideoProductOverlay";
 import ProductBottomSheet from "./ProductBottomSheet";
 import VideoSlide from "./VideoSlide";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
-import JoonWebBadge from "../common/JoonWebBadge";
 
 export default function ModalPlayer({ items }) {
   const {
@@ -33,8 +32,6 @@ export default function ModalPlayer({ items }) {
   const { isMobile } = useResize();
   const [productDetails, setProductDetails] = useState(null);
 
-  // Player Hooks
-  const { isLoaded: playerJsReady } = usePlayerJsLoader();
   const {
     initPlayer,
     playActiveVideo,
@@ -46,12 +43,12 @@ export default function ModalPlayer({ items }) {
   const handleClose = () => {
     cleanupAllPlayers();
     closeModal();
-    document.documentElement.classList.remove('overflow-hidden !important');
-    document.body.classList.remove('overflow-hidden !important');
+    document.documentElement.classList.remove('plugin-overflow-hidden');
+    document.body.classList.remove('plugin-overflow-hidden');
   };
 
   const filteredList = items?.filter(item => !item?.mediaId?.isDeleted)
-  useKeyboardNavigation(filteredList)
+  useKeyboardNavigation(filteredList, handleClose);
 
   const handleSlideChange = (swiper) => {
     pauseVideo(currentIndex);
@@ -86,21 +83,17 @@ export default function ModalPlayer({ items }) {
             onSlideChange={handleSlideChange}
             loop={true}
             onSwiper={(swiper) => {
-              // Sync initial state
+            
               setCurrentIndex(swiper.activeIndex);
             }}
           >
             {items?.map((item, idx) => {
-              // --- THE NUCLEAR STRATEGY ---
-              // Only render the iframe if this is the EXACT active slide.
               const isActive = currentIndex === idx;
 
               return (
                 <SwiperSlide key={item._id ?? idx}>
                   <div className="relative w-full h-full bg-black">
 
-                    {/* 1. POSTER IMAGE (Always Visible) */}
-                    {/* This ensures the user sees something while swiping/loading */}
                     <img
                       src={item.mediaId?.thumbnailUrl}
                       className={`absolute inset-0 w-full h-full object-cover z-0 ${isActive && isIframeReady ? 'opacity-0' : 'opacity-100'}`}
@@ -108,27 +101,24 @@ export default function ModalPlayer({ items }) {
                       loading="eager"
                     />
 
-                    {/* 2. SHIMMER (Visible on top until video is ready) */}
                     {isActive && !isIframeReady && (
                       <div className="absolute inset-0 z-[2] flex items-center justify-center">
                         <ReelShimmer item={item} />
                       </div>
                     )}
 
-                    {/* 3. CLICK OVERLAY (Play/Pause) */}
                     <div
                       className="absolute inset-0 z-20 bg-transparent w-full h-full md:hidden"
                       onClick={() => togglePlayPause(currentIndex)}
                     />
 
-                    {/* 4. THE VIDEO PLAYER */}
-                    {/* It is only injected into the DOM if isActive is true */}
+            
                     {isActive ? (
                       <VideoSlide
                         item={item}
                         idx={idx}
-                        isActive={true}     // Always true if rendered
-                        shouldRender={true} // Always true if rendered
+                        isActive={true}    
+                        shouldRender={true}
                         initPlayer={initPlayer}
                         isMuted={isMuted}
                         onReady={handleVideoReady}
@@ -166,21 +156,17 @@ export default function ModalPlayer({ items }) {
         <div className="hidden md:block md:w-1/2 lg:block lg:w-1/2 relative h-full">
           <div className="relative w-full h-full">
 
-            {/* Desktop Shimmer */}
             {!isIframeReady && (
               <div className="absolute inset-0 z-[2]">
                 <ReelShimmer />
               </div>
             )}
 
-            {/* Click overlay */}
             <div
               className="absolute inset-0 z-10 cursor-pointer"
               onClick={() => togglePlayPause(currentIndex)}
             />
 
-            {/* Desktop Video Slide */}
-            {/* We use 'key' to force re-mount on index change */}
             <VideoSlide
               key={`desktop-${currentIndex}`}
               item={items[currentIndex]}

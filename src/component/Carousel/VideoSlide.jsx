@@ -79,7 +79,7 @@ const VideoSlide = memo(({
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             // Tell browser to load this ASAP
-            fetchpriority="high" 
+            fetchPriority="high" 
             title={`Video ${idx + 1}`}
         />
     );

@@ -18,7 +18,6 @@ function App({ site }) {
   
   return (
     <QueryClientProvider client={queryClient}>
-
       <div className='App-relative'>
         <main className='p-4'>
           <WidgetLoader site={site} />

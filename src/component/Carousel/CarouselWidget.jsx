@@ -10,7 +10,7 @@ const CarouselWidget = ({ items, settings, widgetType, heading, isIntegrated, is
   const { isLoaded: playerJsReady } = usePlayerJsLoader();
 
   if (!items || items.length === 0) return null;
-  if (!isLive) return null; // Best practice to return null instead of undefined
+  if (!isLive) return null;
 
   return (
     <div className="w-full py-10 bg-white">

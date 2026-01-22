@@ -14,7 +14,7 @@ const WidgetLoader = ({ site }) => {
     );
   }
 
-  if (isError || !widget) return null;
+  if (isError || !widget) return <NoItems />;
 
   const { items } = widget;
 

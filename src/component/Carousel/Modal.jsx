@@ -4,6 +4,7 @@ import { useViewerStore } from "../../store/useViewerStore";
 import { useWidgetData } from "../../hooks/useWidgetsData";
 import { useResize } from "../../hooks/useResize";
 import JoonWebBadge from "../common/JoonWebBadge";
+import { Toaster } from "react-hot-toast";
 
 // Lazy load the heavy player logic
 const ModalPlayer = React.lazy(() => import("./ModalPlayer"));
@@ -32,6 +33,8 @@ const Modal = ({ items, playerJsReady }) => {
 
   return (
     <div className="fixed w-full h-full inset-0 flex items-center justify-center md:p-4 overflow-hidden z-[9999] md:bg-black/40 md:backdrop-blur-md">
+
+      <Toaster position="top-center" />
 
       {!isMobile && items?.length > 1 && (
         <>

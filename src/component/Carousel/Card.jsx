@@ -23,8 +23,8 @@ const Card = ({ item, index, widgetType, playerJsReady }) => {
         if (playerJsReady) {
           if (!isMobile) {
             openModal(index, "Carousel", widgetType)
-            document.documentElement.classList.add('overflow-hidden');
-            document.body.classList.add('overflow-hidden');
+            document.documentElement.classList.add('plugin-overflow-hidden');
+            document.body.classList.add('plugin-overflow-hidden');
           }else {
             openModal(index, "Carousel", widgetType)
           }
