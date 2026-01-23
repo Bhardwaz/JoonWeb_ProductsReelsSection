@@ -34,10 +34,8 @@ const Card = ({ item, index, widgetType, playerJsReady }) => {
       onMouseLeave={() => setIsHovered(false)}
       className="group cursor-pointer flex flex-col gap-3 w-full"
     >
-      {/* --- 1. MEDIA SECTION (Video/Image) --- */}
       <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-gray-100">
 
-        {/* Main Background Image/Video */}
         <img
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           src={isHovered ? item?.mediaId?.previewAnimationUrl : item?.mediaId?.thumbnailUrl}
@@ -58,7 +56,6 @@ const Card = ({ item, index, widgetType, playerJsReady }) => {
           </div>
         )}
 
-        {/* Play Icon Overlay (Optional - shows on hover) */}
         <div className={`absolute inset-0 flex items-center justify-center bg-black/10 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <svg className="w-12 h-12 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
         </div>
@@ -66,22 +63,20 @@ const Card = ({ item, index, widgetType, playerJsReady }) => {
 
       {/* --- 2. DETAILS SECTION (Below Media) --- */}
       <div className="text-center px-1">
-        {/* Title */}
-        <h3 className="text-gray-900 text-[10px] font-bold md:text-[16px] leading-tight truncate">
-          {product.title || ""}
+        <h3 className="text-gray-700 text-[10px] font-bold md:text-[16px] leading-tight truncate">
+          {product?.title || ""}
         </h3>
 
         {/* Price Row */}
         <div className="flex items-center justify-center gap-2 mt-1">
           {/* Current Price */}
-          <span className="text-gray-900 font-bold text-base">
+          <span className="text-gray-900 font-bold">
             ₹{product.variants?.[0]?.sale_price || product.price}
           </span>
 
-          {/* Original Price & Discount --  need to check */}
           {(product.originalPrice || product.variants?.[0]?.compare_at_price) && (
             <>
-              <span className="text-gray-400 text-xs line-through decoration-gray-400">
+              <span className="text-gray-400 line-through decoration-gray-400">
                 ₹{product.variants?.[0]?.compare_at_price || product.originalPrice}
               </span>
               <span className="text-green-500 text-xs font-bold">

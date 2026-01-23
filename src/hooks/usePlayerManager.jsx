@@ -4,8 +4,6 @@ export const usePlayerManager = () => {
   const playersRef = useRef(new Map())  // set remote of all videos - play, pause and mute
   const activeIndexRef = useRef(-1)
 
-  console.log(playersRef, "players ref")
-
   const playActiveVideo = useCallback((index, isMuted = false) => {
     playersRef.current.forEach((p, i) => {
       if (i === index) return;

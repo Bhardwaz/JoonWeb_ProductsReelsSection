@@ -18,7 +18,7 @@ function App({ site }) {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <div className='App-relative'>
+      <div className='App-relative tw-reset'>
         <main className='p-4'>
           <WidgetLoader site={site} />
         </main>

@@ -1,11 +1,24 @@
 import React from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/pagination';
+
 import Card from './Card';
-import { useViewerStore } from '../../store/useViewerStore';
 import Modal from './Modal';
+import { useViewerStore } from '../../store/useViewerStore';
 import { usePlayerJsLoader } from '../../hooks/usePlayerJSLoader';
 import { renderPaintedText } from '../common/style-settings.jsx';
 
-const CarouselWidget = ({ items, settings, widgetType, heading, isIntegrated, isLive }) => {
+const CarouselWidget = ({
+  items,
+  settings,
+  widgetType,
+  heading,
+  isIntegrated,
+  isLive
+}) => {
   const activeView = useViewerStore((state) => state.activeView);
   const { isLoaded: playerJsReady } = usePlayerJsLoader();
 
@@ -13,31 +26,52 @@ const CarouselWidget = ({ items, settings, widgetType, heading, isIntegrated, is
   if (!isLive) return null;
 
   return (
-    <div className="w-full py-10 bg-white">
-      {/* Header Section */}
-      <div className="mb-6 px-4 md:px-8 flex items-center justify-between">
-        <div className="flex flex-col">
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-            {renderPaintedText(heading)}
-          </h2>
-          {/* Optional: Add a tiny decorative line under the heading */}
-          <div className="h-1 w-20 bg-gradient-to-r from-blue-600 to-violet-600 rounded-full mt-2"></div>
-        </div>
+    <div className="w-full md:max-w-3xl mx-auto md:px-8">
+  
+      <div className="mb-6 px-4 md:px-8">
+        <h2 className="text-xl md:text-4xl font-extrabold tracking-tight">
+          {renderPaintedText(heading)}
+        </h2>
+        <div className="h-1 w-20 bg-gradient-to-r from-blue-600 to-violet-600 rounded-full mt-2" />
       </div>
 
-      {/* Scrollable Container */}
-      <div style={{ marginTop: "20px" }} className="flex gap-4 overflow-x-auto px-4 md:px-8 pb-8 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-        {items.map((item, index) => (
-          <div
-            key={item._id || index}
-            className="w-[200px] flex-shrink-0 snap-start transition-transform duration-300 hover:scale-[1.02]"
-          >
-            <Card item={item} index={index} widgetType={widgetType} playerJsReady={playerJsReady} />
-          </div>
-        ))}
+      <div className="px-4 md:px-8 mt-4">
+        <Swiper
+          spaceBetween={12}
+          slidesPerView={2.5}
+          grabCursor
+          breakpoints={{
+            640: { 
+              slidesPerView: 4,
+              spaceBetween: 8
+            },
+            1024: { 
+              slidesPerView: 4,
+              spaceBetween: 8 
+            },
+            1280: { 
+              slidesPerView: 4, 
+              spaceBetween: 8
+            }
+          }}
+        >
+          {items.map((item, index) => (
+            <SwiperSlide key={item._id || index}>
+              <div className="transition-transform duration-300 hover:scale-[1.02]">
+                <Card
+                  item={item}
+                  index={index}
+                  widgetType={widgetType}
+                  playerJsReady={playerJsReady}
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
 
-      {activeView === "Carousel" && playerJsReady && (
+      {/* Modal */}
+      {activeView === 'Carousel' && playerJsReady && (
         <Modal items={items} playerJsReady={playerJsReady} />
       )}
     </div>

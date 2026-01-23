@@ -5,7 +5,7 @@ import { useResize } from "../../hooks/useResize";
 import ReelShimmer from "../../shimmir/ReelShimmir"; // Ensure this path is correct
 import { usePlayerJsLoader } from "../../hooks/usePlayerJSLoader";
 import { usePlayerManager } from "../../hooks/usePlayerManager";
-
+import VideoJSPlayer from "./VideoJSPlayer"; // Import the file you created in Step 1
 // Swiper Imports
 import "swiper/css";
 import { Mousewheel } from "swiper/modules";
@@ -17,6 +17,7 @@ import VideoProductOverlay from "./VideoProductOverlay";
 import ProductBottomSheet from "./ProductBottomSheet";
 import VideoSlide from "./VideoSlide";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
+import { preload } from "react-dom";
 
 export default function ModalPlayer({ items }) {
   const {
@@ -31,24 +32,24 @@ export default function ModalPlayer({ items }) {
 
   const { isMobile } = useResize();
   const [productDetails, setProductDetails] = useState(null);
+  const playerRef = useRef(null);
+  const timeTracker = useRef({}); // simple memory for video times
 
   const {
     initPlayer,
-    playActiveVideo,
     pauseVideo,
-    cleanupAllPlayers,
     togglePlayPause
   } = usePlayerManager();
 
   const handleClose = () => {
-    cleanupAllPlayers();
+    // cleanupAllPlayers();
     closeModal();
     document.documentElement.classList.remove('plugin-overflow-hidden');
     document.body.classList.remove('plugin-overflow-hidden');
   };
 
   const filteredList = items?.filter(item => !item?.mediaId?.isDeleted)
-  useKeyboardNavigation(filteredList, handleClose);
+  // useKeyboardNavigation(filteredList, handleClose);
 
   const handleSlideChange = (swiper) => {
     pauseVideo(currentIndex);
@@ -83,7 +84,7 @@ export default function ModalPlayer({ items }) {
             onSlideChange={handleSlideChange}
             loop={true}
             onSwiper={(swiper) => {
-            
+
               setCurrentIndex(swiper.activeIndex);
             }}
           >
@@ -101,28 +102,44 @@ export default function ModalPlayer({ items }) {
                       loading="eager"
                     />
 
-                    {isActive && !isIframeReady && (
+                    {/* {isActive && !isIframeReady && (
                       <div className="absolute inset-0 z-[2] flex items-center justify-center">
                         <ReelShimmer item={item} />
                       </div>
-                    )}
+                    )} */}
 
-                    <div
+                    {/* <div
                       className="absolute inset-0 z-20 bg-transparent w-full h-full md:hidden"
                       onClick={() => togglePlayPause(currentIndex)}
-                    />
+                    /> */}
 
-            
                     {isActive ? (
-                      <VideoSlide
-                        item={item}
-                        idx={idx}
-                        isActive={true}    
-                        shouldRender={true}
-                        initPlayer={initPlayer}
-                        isMuted={isMuted}
-                        onReady={handleVideoReady}
-                      />
+                      <div className="absolute inset-0 w-full h-full z-10">
+                        <VideoJSPlayer
+                          options={{
+                            autoplay: true,
+                            controls: false,
+                            responsive: true,
+                            fill: true,
+                            muted: false,
+                            preload: 'auto',
+                            sources: [{
+                              src: item?.mediaId?.hlsUrl,
+                              type: "application/x-mpegURL"
+                            }]
+                          }}
+                          startTime={timeTracker.current[item?.mediaId?._id] || 0}
+
+                          onTimeUpdate={(currentTime) => {
+                            timeTracker.current[item?.mediaId?._id] = currentTime;
+                          }}
+
+                          onReady={(player) => {
+                            player.muted(false);
+                            player.play().catch(e => console.log("Autoplay prevented", e));
+                          }}
+                        />
+                      </div>
                     ) : null}
 
                     <VideoProductOverlay
@@ -151,32 +168,51 @@ export default function ModalPlayer({ items }) {
             />
           )}
         </div>
-      ) : (
-        /* DESKTOP PLAYER */
+     ) : (
+        /* DESKTOP PLAYER - FINAL FIX */
         <div className="hidden md:block md:w-1/2 lg:block lg:w-1/2 relative h-full">
-          <div className="relative w-full h-full">
-
+          <div className="relative w-full h-full bg-black">
+            
             {!isIframeReady && (
               <div className="absolute inset-0 z-[2]">
                 <ReelShimmer />
               </div>
             )}
 
-            <div
-              className="absolute inset-0 z-10 cursor-pointer"
-              onClick={() => togglePlayPause(currentIndex)}
-            />
+            <div className="absolute inset-0 w-full h-full z-10">
+              <VideoJSPlayer
+                /* key ensures a fresh player for every new video, preventing errors */
+                key={currentItem?._id || currentIndex} 
+                
+                options={{
+                  autoplay: true,
+                  controls: false,
+                  responsive: true,
+                  fill: true,
+                  muted: false,
+                  preload: 'auto',
+                  sources: [{
+                    src: currentItem?.mediaId?.hlsUrl,
+                    type: "application/x-mpegURL"
+                  }]
+                }}
+                
+                /* Resume time logic */
+                startTime={timeTracker.current[currentItem?.mediaId?._id] || 0}
+                
+                /* Save time logic */
+                onTimeUpdate={(currentTime) => {
+                  timeTracker.current[currentItem?.mediaId?._id] = currentTime;
+                }}
 
-            <VideoSlide
-              key={`desktop-${currentIndex}`}
-              item={items[currentIndex]}
-              idx={currentIndex}
-              isActive={true}
-              shouldRender={true}
-              initPlayer={initPlayer}
-              isMuted={isMuted}
-              onReady={handleVideoReady}
-            />
+                onReady={(player) => {
+                  playerRef.current = player;
+                  player.muted(false);
+                  // REMOVED player.play() -> Autoplay handles it now!
+                  setIframeReady(true);
+                }}
+              />
+            </div>
           </div>
 
           <SvgButtons

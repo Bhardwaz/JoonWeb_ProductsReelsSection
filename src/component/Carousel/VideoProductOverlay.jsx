@@ -73,9 +73,9 @@ const VideoProductOverlay = ({ product, onOpenDetails, onAddToCart }) => {
 
           {/* Shipping Badge - VISUAL ENHANCEMENT */}
           <div className="mt-1 flex items-center gap-1">
-            <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+            {/* <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
               🚚 Free Shipping
-            </span>
+            </span> */}
             {hasMultipleOptions && (
               <span className="text-[10px] font-semibold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100">
                 {product.options.length} Colors
@@ -84,7 +84,7 @@ const VideoProductOverlay = ({ product, onOpenDetails, onAddToCart }) => {
           </div>
         </div>
 
-        {/* Action Button - VISUAL ENHANCEMENTS */}
+
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -107,11 +107,9 @@ const VideoProductOverlay = ({ product, onOpenDetails, onAddToCart }) => {
           </div>
         </button>
 
-        {/* Micro Interaction Indicator */}
         <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-gray-400/50 to-transparent rounded-full opacity-50" />
       </div>
 
-      {/* Bottom Glow Effect - VISUAL ENHANCEMENT */}
       <div className="absolute -bottom-2 left-1/4 right-1/4 h-3 bg-gradient-to-t from-white/20 to-transparent blur-sm rounded-full -z-10" />
     </div>
   );

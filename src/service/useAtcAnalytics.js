@@ -3,9 +3,9 @@ import axios from "axios";
 
 const incrementAtcCounter = async (id) => {
     let url = "https://shoppable-reels.manage.jooncorporation.com"
-    if(import.meta.env.VITE_NODE_ENV === 'development'){
-        url = import.meta.env.VITE_LOCAL_API_URL
-    }
+    // if(import.meta.env.VITE_NODE_ENV === 'development'){
+    //     url = import.meta.env.VITE_LOCAL_API_URL
+    // }
 
     const response = await axios.post(`${url}/api/v1/media/atc/${id}`);
     return response.data;

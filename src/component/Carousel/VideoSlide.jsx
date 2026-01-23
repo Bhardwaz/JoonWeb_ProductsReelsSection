@@ -11,21 +11,19 @@ const VideoSlide = memo(({
     const iframeRef = useRef(null);
 
     useEffect(() => {
-        // Safety check
+        
         if (!iframeRef.current) return;
 
         const iframe = iframeRef.current;
         let playerInstance = null;
 
         const handleLoad = () => {
-            // 1. Initialize Player
-            // Since this component only mounts when active, we init immediately.
+    
             console.log(`🚀 Booting Player for Slide ${idx}`);
             playerInstance = initPlayer(iframe, idx);
 
             if (!playerInstance) return;
 
-            // 2. Play Immediately
             try {
                 // Handle Mute safely
                 if (isMuted) {

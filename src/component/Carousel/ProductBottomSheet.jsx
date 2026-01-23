@@ -4,6 +4,7 @@ import { useViewerStore } from "../../store/useViewerStore";
 import useAddToCart from "../../service/useAddToCart";
 import useAtcAnalytics from "../../service/useAtcAnalytics";
 import { Toaster } from "react-hot-toast";
+import { usePlayerManager } from "../../hooks/usePlayerManager";
 
 // --- 1. HELPER: Parse Variants (Synced with ProductDetails) ---
 const parseVariantsStructure = (product) => {
@@ -252,18 +253,17 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
   const { mutate: addToCart } = useAddToCart();
   const { mutate: atc } = useAtcAnalytics();
 
-  // --- Animation Effect ---
+  const { closeModal } = useViewerStore()
+  const { cleanupAllPlayers } = usePlayerManager();
+
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
-      // Small delay to trigger animation after DOM render
       setTimeout(() => {
         setShouldAnimate(true);
       }, 10);
     } else {
-      // Trigger closing animation
       setShouldAnimate(false);
-      // Delay hiding component until animation completes
       const timer = setTimeout(() => setIsVisible(false), 400);
       return () => clearTimeout(timer);
     }
@@ -298,9 +298,9 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
 
   const handleSelect = (name, val) => setSelectedOptions(prev => ({ ...prev, [name]: val }));
 
-  // --- Quantity Logic ---
   const increaseQuantity = () => {
     if (!activeVariant) return;
+    if(addedToCart) setAddedToCart(false);
     if (!activeVariant.is_trackable) {
       setQuantity(prev => prev + 1);
       return;
@@ -311,6 +311,7 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
   };
 
   const decreaseQuantity = () => {
+    if(addedToCart) setAddedToCart(false);
     if (quantity > 1) {
       setQuantity(prev => prev - 1);
     }
@@ -330,8 +331,15 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
     atc(product?.id);
     
     setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
   };
+
+  function handleGoToCheckout() {
+    cleanupAllPlayers();
+    closeModal();
+    document.documentElement.classList.remove('plugin-overflow-hidden');
+    document.body.classList.remove('plugin-overflow-hidden');
+    location.href = location.origin + "/cart"
+  }
 
   if (!isOpen && !isVisible) return null;
 
@@ -429,7 +437,7 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
         }`}>
           
           {/* Trust Badges with staggered animation */}
-          <div className={`mb-4 mt-2 transition-all duration-400 ${
+          {/* <div className={`mb-4 mt-2 transition-all duration-400 ${
             shouldAnimate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`} style={{ transitionDelay: "200ms" }}>
             <div className="flex gap-2">
@@ -446,7 +454,7 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
                 <span className="text-xs font-semibold text-gray-700">Free Returns</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Image Swiper with animation */}
           <div className={`transition-all duration-500 ${
@@ -455,7 +463,6 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
             <MobileImageSwiper images={currentImages} />
           </div>
 
-          {/* Title with gradient and animation */}
           <div className={`transition-all duration-400 ${
             shouldAnimate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`} style={{ transitionDelay: "300ms" }}>
@@ -464,14 +471,12 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
             </h1>
           </div>
           
-          {/* Price & Info with animation */}
           <div className={`transition-all duration-400 ${
             shouldAnimate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`} style={{ transitionDelay: "350ms" }}>
             <VariantInfo variant={activeVariant} />
           </div>
 
-          {/* Variants Section with staggered animation */}
           {hasVariants && (
             <div className={`mb-6 bg-gradient-to-b from-white to-gray-50/30 p-4 rounded-2xl border border-gray-100 shadow-sm transition-all duration-500 ${
               shouldAnimate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
@@ -535,7 +540,6 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
                     );
                 })}
 
-                {/* ENHANCED QUANTITY SELECTOR with animation */}
                 <div className={`mt-1 pt-1 border-t border-gray-100 transition-all duration-500 ${
                   shouldAnimate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 }`} style={{ transitionDelay: "550ms" }}>
@@ -561,7 +565,6 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
             </div>
           )}
 
-          {/* Description with animation */}
           <div className={`mt-6 border-t border-gray-100 pt-6 transition-all duration-500 ${
             shouldAnimate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`} style={{ transitionDelay: "600ms" }}>
@@ -570,21 +573,20 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
               <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Product Details</h3>
             </div>
             <div className="bg-gradient-to-b from-white to-gray-50/30 p-4 rounded-xl border border-gray-100 shadow-sm">
-              <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{product?.body_html}</p>
+              <p dangerouslySetInnerHTML={{ __html: product.body_html }} className="text-sm text-gray-600 leading-relaxed whitespace-pre-line"></p>
             </div>
           </div>
         </div>
 
-        {/* ENHANCED STICKY FOOTER with animation */}
         <StickyFooter 
           activeVariant={activeVariant} 
+          handleGoToCheckout={handleGoToCheckout}
           handleAddToCart={handleAddToCartFn}
           addedToCart={addedToCart}
           shouldAnimate={shouldAnimate}
         />
       </div>
 
-      {/* Add CSS animations */}
       <style jsx global>{`
         @keyframes fadeInUp {
           from {
@@ -634,7 +636,7 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
   );
 };
 
-const StickyFooter = ({ activeVariant, handleAddToCart, addedToCart, shouldAnimate }) => {
+const StickyFooter = ({ activeVariant, handleGoToCheckout, handleAddToCart, addedToCart, shouldAnimate }) => {
   const isOOS = !activeVariant || (activeVariant.is_trackable && activeVariant.inventory_quantity === 0);
   const totalPrice = activeVariant?.sale_price ? (activeVariant.sale_price * 1).toLocaleString() : '0';
 
@@ -643,7 +645,8 @@ const StickyFooter = ({ activeVariant, handleAddToCart, addedToCart, shouldAnima
       shouldAnimate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full"
     }`} style={{ transitionDelay: "650ms" }}>
       <button
-        onClick={handleAddToCart}
+        id="plugin-atc-button"
+        onClick={ () =>  addedToCart ? handleGoToCheckout() : handleAddToCart()}
         disabled={isOOS}
         className={`relative w-full rounded-2xl font-bold text-base py-4 flex items-center justify-center gap-3 transition-all duration-500 overflow-hidden group ${
           isOOS 
@@ -685,7 +688,7 @@ const StickyFooter = ({ activeVariant, handleAddToCart, addedToCart, shouldAnima
               </div>
               <div className="text-left">
                 <div className="text-lg font-bold">Add to Cart • ₹{totalPrice}</div>
-                <div className="text-sm font-normal opacity-90">Free shipping • 30-day returns</div>
+                {/* <div className="text-sm font-normal opacity-90">Free shipping • 30-day returns</div> */}
               </div>
             </>
           )}

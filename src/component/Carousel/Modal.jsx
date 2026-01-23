@@ -39,10 +39,10 @@ const Modal = ({ items, playerJsReady }) => {
       {!isMobile && items?.length > 1 && (
         <>
           <div className={`${arrowBtnClass} left-8 w-[50px] h-[50px] p-3`} onClick={handlePrev}>
-            <svg xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
           </div>
           <div className={`${arrowBtnClass} right-8 w-[50px] h-[50px] p-3`} onClick={handleNext}>
-            <svg xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </div>
         </>
       )}
@@ -52,7 +52,6 @@ const Modal = ({ items, playerJsReady }) => {
         {!isMobile && items?.length > 1 && (
           <div
             className={`${sideThumbClass} z-10`}
-            style={{ marginRight: "32px" }}
             onClick={handlePrev}
           >
             <img
@@ -70,7 +69,6 @@ const Modal = ({ items, playerJsReady }) => {
         {!isMobile && items?.length > 1 && (
           <div
             className={`${sideThumbClass} z-10`}
-            style={{ marginLeft: "32px" }}
             onClick={handleNext}
           >
             <img

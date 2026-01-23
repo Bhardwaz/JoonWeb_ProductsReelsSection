@@ -6,7 +6,8 @@ module.exports = {
   theme: { extend: {} },
   plugins: [],
   corePlugins: {
-    preflight: false, // <--- Disables global resets
+    preflight: false,
   },
-  prefix: 'tw-'
+  prefix: 'tw-',
+  important: true,
 };
