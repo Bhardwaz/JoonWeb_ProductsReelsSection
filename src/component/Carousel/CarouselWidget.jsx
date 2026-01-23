@@ -26,7 +26,7 @@ const CarouselWidget = ({
   if (!isLive) return null;
 
   return (
-    <div className="w-full md:max-w-3xl mx-auto md:px-8">
+    <div className="w-full px-4 md:max-w-2xl lg:max-w-4xl mx-auto md:px-6 lg:px-8">
   
       <div className="mb-6 px-4 md:px-8">
         <h2 className="text-xl md:text-4xl font-extrabold tracking-tight">

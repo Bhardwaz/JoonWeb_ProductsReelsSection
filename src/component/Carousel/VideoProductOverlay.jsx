@@ -36,7 +36,6 @@ const VideoProductOverlay = ({ product, onOpenDetails, onAddToCart }) => {
         {/* Glow Effect - VISUAL ENHANCEMENT */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-2xl -z-10" />
         
-        {/* Product Image Container - VISUAL ENHANCEMENTS */}
         <div className="relative w-8 flex-shrink-0 bg-gradient-to-br from-gray-100 to-white rounded-xl overflow-hidden border-2 border-white shadow-lg" style={{ width: "75px" }}>
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent" />
           <img

@@ -161,9 +161,10 @@ export default function ModalPlayer({ items }) {
 
           {productDetails && (
             <ProductBottomSheet
+              product={productDetails}
+              isMobile={isMobile}
               isOpen={!!productDetails}
               onClose={() => setProductDetails(null)}
-              product={productDetails}
               style={{ zIndex: 9999 }}
             />
           )}
@@ -181,7 +182,6 @@ export default function ModalPlayer({ items }) {
 
             <div className="absolute inset-0 w-full h-full z-10">
               <VideoJSPlayer
-                /* key ensures a fresh player for every new video, preventing errors */
                 key={currentItem?._id || currentIndex} 
                 
                 options={{

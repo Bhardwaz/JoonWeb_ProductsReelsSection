@@ -157,16 +157,16 @@ const VariantJSX = ({ variant }) => {
 
       {variant?.discount > 0 && (
         <div className="flex items-center gap-2 mb-3">
-          <span style={{ padding: "5px" }} className="text-xs font-bold text-white bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-md">
+          <span className="text-xs font-bold text-white bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-md px-2 py-1">
             {discountPercentage}% OFF
           </span>
-          <span className="text-sm font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">
+          <span className="text-sm font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md px-2 py-1">
             Save ₹{variant.discount.toLocaleString()}
           </span>
         </div>
       )}
 
-      <div className="flex items-center gap-3 mt-1">
+      <div className="flex items-center gap-3 mt-1 mb-3">
         <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${!variant?.is_trackable || variant?.inventory_quantity > 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
           <div className={`w-2 h-2 rounded-full ${!variant?.is_trackable || variant?.inventory_quantity > 0 ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
           {!variant?.is_trackable ? (
@@ -309,25 +309,21 @@ const ProductDetails = ({ product }) => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-gradient-to-b from-white to-gray-50/50 font-sans text-gray-900 relative">
+    <div className="flex flex-col h-full w-full bg-gradient-to-b from-white to-gray-50/50 font-sans text-gray-900 relative jwshopewalreel">
       <div className="flex-1 overflow-y-auto overflow-x-hidden pb-20 scrollbar-thin scrollbar-thumb-gray-300">
 
         <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 w-full h-[200px] md:h-[350px] flex items-center justify-center relative overflow-hidden p-6 group">
           <ImageSwiper images={currentImages} activeIndex={imageIndex} onIndexChange={setImageIndex} />
         </div>
 
-        <div className="px-2">
+        <div className="p-2">
 
           {product?.title && (
-            <div className="m-2">
-              <h1
-                style={{ fontSize: "16px" }}
+              <h4
                 className="font-bold leading-snug bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-1"
               >
                 {product.title}
-              </h1>
-              {/* <p className="text-xs text-gray-500">Premium Quality • 1-Year Warranty • Free Returns</p> */}
-            </div>
+              </h4>
           )}
 
           {activeVariant ? (
@@ -365,9 +361,9 @@ const ProductDetails = ({ product }) => {
                 <div key={option.name} className="mb-3">
                   <div className="flex items-center justify-between text-sm font-medium text-gray-500 mb-2">
                     <span className="font-semibold text-gray-900">{option.name}:</span>
-                    <span className="text-gray-900 font-bold bg-gradient-to-r from-gray-100 to-gray-200 px-2 py-1 rounded-md border border-gray-200">
+                    {/* <span className="text-gray-900 font-bold bg-gradient-to-r from-gray-100 to-gray-200 px-2 py-1 rounded-md border border-gray-200">
                       {selectedOptions[option.name]}
-                    </span>
+                    </span> */}
                   </div>
 
                   <div className="flex flex-wrap gap-2 mb-3">
@@ -396,7 +392,7 @@ const ProductDetails = ({ product }) => {
                         <button
                           key={value}
                           onClick={() => handleOptionSelect(option.name, value)}
-                          className={`text-sm font-semibold rounded-lg transition-all duration-300 whitespace-nowrap border px-4 py-2 shadow-sm ${isActive
+                          className={`text-sm font-semibold rounded-lg transition-all duration-300 whitespace-nowrap border px-3 py-1 shadow-sm ${isActive
                               ? "bg-gradient-to-r from-gray-900 to-gray-800 text-white border-gray-900 shadow-lg scale-[1.02]"
                               : "bg-white text-gray-600 border-gray-300 hover:border-gray-500 hover:text-gray-900 hover:bg-gray-50 hover:shadow-md"
                             }`}
@@ -434,17 +430,16 @@ const ProductDetails = ({ product }) => {
 
           {product?.body_html && (
             <div className="py-6 border-t border-gray-100">
-              <p className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wider flex items-center gap-2">
-                <span className="w-2 h-2 bg-gradient-to-r from-gray-900 to-gray-700 rounded-full"></span>
+              <p className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2 p-2">
                 Description
               </p>
-              <div dangerouslySetInnerHTML={{ __html: product.body_html }} className="text-sm leading-relaxed text-gray-600 bg-gradient-to-b from-white to-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm whitespace-pre-line" />
+              <div dangerouslySetInnerHTML={{ __html: product.body_html }} className="text-sm leading-relaxed text-gray-600 bg-gradient-to-b from-white to-gray-50 p-2 rounded-lg" />
             </div>
           )}
         </div>
       </div>
 
-      <div style={{ padding: "28px 12px" }} className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-white/95 border-t border-gray-200 z-10">
+      <div className="p-2 sticky bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-white/95 border-t border-gray-200 z-10">
         {(() => {
           const isOutOfStock = !activeVariant || (activeVariant.is_trackable && activeVariant.inventory_quantity <= 0);
           return (
@@ -452,7 +447,7 @@ const ProductDetails = ({ product }) => {
               id="plugin-atc-button"
               onClick={() => addedToCart ? handleGoToCheckout() : handleAddToCart()}
               disabled={isOutOfStock}
-              className={`relative w-full py-3 px-4 rounded-xl text-base font-bold flex items-center justify-center gap-2 shadow-xl transition-all duration-500 overflow-hidden group ${isOutOfStock
+              className={`relative w-full p-2 rounded-xl text-base font-bold flex items-center justify-center gap-2 shadow-xl transition-all duration-500 overflow-hidden group ${isOutOfStock
                   ? "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-400 cursor-not-allowed border border-gray-300"
                   : addedToCart
                     ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white"

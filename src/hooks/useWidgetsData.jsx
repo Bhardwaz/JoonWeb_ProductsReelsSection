@@ -5,10 +5,10 @@ import axios from 'axios';
 
 export const useWidgetData = (site) => {
   let url = "https://shoppable-reels.manage.jooncorporation.com"
-    // if(import.meta.env.VITE_NODE_ENV === 'development'){
-    //     url = import.meta.env.VITE_LOCAL_API_URL
-    //     site = "sumit-bhardwaj.myjoonweb.com"
-    // }
+    if(import.meta.env.VITE_NODE_ENV === 'development'){
+        url = import.meta.env.VITE_LOCAL_API_URL
+        site = "sumit-bhardwaj.myjoonweb.com"
+    }
 
   return useQuery({
     queryKey: ['widget-config'],

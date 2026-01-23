@@ -6,7 +6,6 @@ import useAtcAnalytics from "../../service/useAtcAnalytics";
 import { Toaster } from "react-hot-toast";
 import { usePlayerManager } from "../../hooks/usePlayerManager";
 
-// --- 1. HELPER: Parse Variants (Synced with ProductDetails) ---
 const parseVariantsStructure = (product) => {
   if (!product || !product.variants || !product.options) return { formattedOptions: [], variantMap: [] };
 
@@ -344,6 +343,8 @@ const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
   if (!isOpen && !isVisible) return null;
 
   const hasVariants = formattedOptions.length > 0;
+
+  console.log("rendering continousely")
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-end justify-center" style={style}>
