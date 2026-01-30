@@ -1,2 +1,71 @@
  .jwshopewalreel h2, .jwshopewalreel h3 { font-size: 1rem; font-weight: 600; color: #1f2937; }
  .jwshopewalreel button { border-radius: 5px !important; }
+
+ .shoppable-carousel {
+    width: 90%;
+
+ }
+
+ .shoppable-carousel h3 {
+    font-size: 1.2rem;
+ }
+
+[data-pip-container] .video-js,
+[data-pip-container] video,
+[data-pip-container] .vjs-tech {
+    z-index: 1 !important;
+}
+
+[data-pip-container] svg {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Container size */
+
+swiper-slide {
+   width: 100%;
+   height: 100%;
+}
+
+swiper-container {
+  --swiper-navigation-color: #000;
+  --swiper-pagination-color: #000;
+  --swiper-pagination-bullet-size: 10px;
+   --swiper-pagination-bottom: 0px;
+  padding-bottom: 40px;
+}
+
+.nav-btn {
+    display: block;
+    position: absolute;
+    z-index: 20;
+    user-select: none;
+    -webkit-user-select: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 5px;
+    transition: background 0.5s ease;
+}
+
+.nav-btn:hover {
+    background-color: var(--nav-hover-color, rgb(255, 165, 0));
+}
+
+.nav-btn.custom-prev-button {
+    top: 50%;
+    left: 2em;
+}
+
+.nav-btn.custom-next-button {
+    right: 2em;
+    top: 50%;
+}
+
+ @media (max-width: 768px) { 
+    .shoppable-carousel {
+    width: 96%;
+ }
+ }

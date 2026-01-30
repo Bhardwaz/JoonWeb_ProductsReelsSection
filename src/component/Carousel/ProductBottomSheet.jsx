@@ -234,9 +234,7 @@ const VariantInfo = ({ variant }) => {
   );
 };
 
-// --- 5. MAIN COMPONENT ---
 const ProductBottomSheet = ({ isOpen, onClose, product, style }) => {
-  // --- Data Parsing ---
   const { formattedOptions, variantMap } = useMemo(() => parseVariantsStructure(product), [product]);
   
   // --- State ---

@@ -5,8 +5,10 @@ import GlobalPlayerLayer from './component/GlobalPlayerLayer';
 import { useWidgetData } from './hooks/useWidgetsData';
 import { useViewerStore } from './store/useViewerStore';
 import { useEffect } from 'react';
+import { register } from 'swiper/element/bundle';
 
 const queryClient = new QueryClient()
+register()
 
 function App({ site }) {
   const { data } = useWidgetData(site)
@@ -19,11 +21,11 @@ function App({ site }) {
   return (
     <QueryClientProvider client={queryClient}>
       <div className='App-relative tw-reset'>
-        <main className='p-4'>
+        <main className='w-full'>
           <WidgetLoader site={site} />
         </main>
 
-        <GlobalPlayerLayer />
+        {/* <GlobalPlayerLayer /> */}
       </div>
     </QueryClientProvider>
   )

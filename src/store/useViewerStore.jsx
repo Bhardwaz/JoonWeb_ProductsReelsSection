@@ -4,26 +4,40 @@ import { devtools } from 'zustand/middleware';
 export const useViewerStore = create(devtools((set, get) => ({
   activeWidgetType: null,
   activeView: null,
-  activeWidgetId: null,   
+  activeWidgetId: null,
   site: "",
   userPlan: "",
-  
-  activePlayerId: null, 
-  
+
+  widgets: {
+    Carousel: null,
+    Pip: null,
+  },
+
+  pipOpen: true,
+
+  globlaData: null,
+
+  activePlayerId: null,
+
   currentIndex: 0,
   isMuted: false,
   isIframeReady: false,
-  
+
   isBunnyPIPMode: false,
 
-  openModal: (index, widgetType, widgetId) => {
-    set({
-      activeView: widgetType,  
+  openModal: (index, widgetType, widgetId, data) => {
+    set((state) => ({
+      activeView: widgetType,
       activeWidgetType: widgetType,
-      activeWidgetId: widgetId, 
+      activeWidgetId: widgetId,
       currentIndex: index,
       isIframeReady: false,
-    });
+
+      widgets: {
+        ...state.widgets,
+        [widgetType]: data
+      }
+    }));
   },
 
   closeModal: () => set({
@@ -33,26 +47,27 @@ export const useViewerStore = create(devtools((set, get) => ({
 
   setSite: (site) => set({ site: site }),
 
-  setPlayingWidget: (id) => set({ activePlayerId: id }), 
+  setPlayingWidget: (id) => set({ activePlayerId: id }),
 
   setCurrentIndex: (index) => set({ currentIndex: index }),
   setIframeReady: (status) => set({ isIframeReady: status }),
   toggleMute: () => set((state) => ({ isMuted: !state.isMuted })),
 
   expandToModal: () => set((state) => ({
-    activeView: state.activeWidgetType 
+    activeView: state.activeWidgetType
   })),
 
   closePip: () => set({
     activeView: null,
-    activePlayerId: null // Stop playback
+    activePlayerId: null,
+    pipOpen: false,
   }),
 
   nextSlide: (totalLength) => {
     const current = get().currentIndex;
     set({ currentIndex: (current + 1) % totalLength });
   },
-  
+
   prevSlide: (totalLength) => {
     const current = get().currentIndex;
     set({ currentIndex: (current - 1 + totalLength) % totalLength });
